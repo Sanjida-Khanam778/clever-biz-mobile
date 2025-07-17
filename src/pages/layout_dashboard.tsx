@@ -31,10 +31,13 @@ const LayoutDashboard = () => {
 
   const navigate = useNavigate();
 
-  const logout = () => {
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("userInfo");
+    // Optional: redirect to home or login
     navigate("/");
   };
-
   return (
     <>
       <div className="h-full w-full overflow-y-auto">
@@ -181,7 +184,7 @@ const LayoutDashboard = () => {
                 "bg-icon-active-bg rounded-full": false,
               }
             )}
-            onClick={() => logout()}
+            onClick={handleLogout}
           >
             <IconLogout
               selected={false}

@@ -10,32 +10,38 @@ import { ImSpinner6 } from "react-icons/im";
 
 const ScreenLogin = () => {
   const [loading, setLoading] = useState(false);
+  const [tableNo, setTableNo] = useState("");
+  const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
-  const navigateToDashboard = () => {
-    navigate("/dashboard");
-  };
-  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+
+  const handleLogin = async () => {
     setLoading(true);
     try {
       const response = await axiosInstance.post("/login/", {
-        email: data.email,
-        password: data.password,
+        email: tableNo,
+        password: password,
       });
-
+      // Assuming response.data contains access and refresh tokens
       console.log(response.data);
-
-      // Use the hook to update user data
-
-      setLoading(false);
-
-      // Show success message with role info
-      toast.success(`Welcome! You are logged in.`);
+      const { access, refresh, ...userInfo } = response.data;
+      if (access && refresh) {
+        localStorage.setItem("accessToken", access);
+        localStorage.setItem("refreshToken", refresh);
+        localStorage.setItem("userInfo", JSON.stringify(userInfo));
+        toast.success(`Welcome! You are logged in.`);
+        navigate("/dashboard");
+      } else {
+        toast.error("Invalid login response.");
+      }
     } catch (error: any) {
-      setLoading(false);
+      toast.error("Login failed. Please check your credentials.");
       console.error("Login failed:", error);
+    } finally {
+      setLoading(false);
     }
   };
+
   return (
     <div className="h-full bg-background relative">
       {/* Bottom image and other */}
@@ -83,7 +89,7 @@ const ScreenLogin = () => {
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                 >
-                  <g clip-path="url(#clip0_39_1308)">
+                  <g clipPath="url(#clip0_39_1308)">
                     <path
                       d="M22.5 0C34.9393 0 45 10.0607 45 22.5C45 34.9393 34.9393 45 22.5 45C10.0607 45 0 34.9393 0 22.5C0 10.0607 10.0607 0 22.5 0ZM18.3857 34.3607C28.35 34.3607 33.8143 26.1 33.8143 18.9321V18.225C34.875 17.4536 35.8071 16.4893 36.5143 15.3964C35.55 15.8143 34.4893 16.1036 33.3964 16.2643C34.5214 15.5893 35.3893 14.5286 35.775 13.275C34.7143 13.8857 33.5571 14.3357 32.3357 14.5929C31.3393 13.5321 29.925 12.8893 28.3821 12.8893C25.3929 12.8893 22.95 15.3321 22.95 18.3214C22.95 18.7393 22.9821 19.1571 23.1107 19.5429C18.6107 19.3179 14.5929 17.1643 11.925 13.8857C11.475 14.6893 11.1857 15.6214 11.1857 16.6179C11.1857 18.4821 12.15 20.1536 13.5964 21.1179C12.6964 21.1179 11.8607 20.8607 11.1536 20.4429V20.5071C11.1536 23.1429 13.0179 25.3286 15.4929 25.8429C15.0429 25.9714 14.5607 26.0357 14.0786 26.0357C13.725 26.0357 13.4036 26.0036 13.05 25.9393C13.725 28.0929 15.75 29.6679 18.0964 29.7C16.2321 31.1464 13.8857 32.0143 11.3464 32.0143C10.8964 32.0143 10.4786 32.0143 10.0607 31.95C12.4393 33.4929 15.3 34.3929 18.3536 34.3929"
                       fill="#FEFEFE"
@@ -102,7 +108,7 @@ const ScreenLogin = () => {
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                 >
-                  <g clip-path="url(#clip0_39_1310)">
+                  <g clipPath="url(#clip0_39_1310)">
                     <path
                       d="M0 2.90081C0 1.29853 1.33144 0 2.97422 0H37.5258C39.1686 0 40.5 1.29853 40.5 2.90081V37.5992C40.5 39.2015 39.1686 40.5 37.5258 40.5H2.97422C1.33144 40.5 0 39.2015 0 37.5992V2.90081ZM9.4732 33.9036C11.1515 33.9036 12.512 32.5431 12.512 30.8648V18.654C12.512 16.9758 11.1515 15.6153 9.4732 15.6153C7.79494 15.6153 6.43444 16.9758 6.43444 18.654V30.8648C6.43444 32.5431 7.79494 33.9036 9.4732 33.9036ZM9.47447 13.1169C11.5931 13.1169 12.9119 11.7146 12.9119 9.95794C12.8739 8.16328 11.5957 6.79894 9.51497 6.79894C7.43428 6.79894 6.075 8.16581 6.075 9.95794C6.075 11.7146 7.39378 13.1169 9.43397 13.1169H9.47447ZM18.8673 33.9036C20.541 33.9036 21.8978 32.5467 21.8978 30.873V23.69C21.8978 23.1432 21.9383 22.5965 22.1003 22.2067C22.5382 21.1157 23.5381 19.9842 25.2188 19.9842C27.4185 19.9842 28.2968 21.6599 28.2968 24.1203V30.8648C28.2968 32.5431 29.6573 33.9036 31.3356 33.9036C33.0139 33.9036 34.3744 32.5431 34.3744 30.8648V23.4141C34.3744 17.7947 31.3774 15.1824 27.378 15.1824C24.1532 15.1824 22.7078 16.9543 21.8978 18.2022V18.2512C21.8978 18.2591 21.8914 18.2655 21.8835 18.2655C21.8722 18.2655 21.8654 18.253 21.8715 18.2435L21.8978 18.2022C21.8978 16.7735 20.7396 15.6153 19.3109 15.6153H18.9275C17.2355 15.6153 15.8491 17.0234 15.8538 18.7154C15.8631 22.1451 15.8473 27.5137 15.8351 30.8642C15.8289 32.5433 17.1882 33.9036 18.8673 33.9036Z"
                       fill="#FEFEFE"
@@ -132,16 +138,32 @@ const ScreenLogin = () => {
             <p className="text-start text-primary">Welcome back</p>
             <div className="space-y-4 mt-6">
               {/* Text Input Field */}
-              <InputField icon={Circle} placeholder="Table No." />
+              <InputField
+                icon={Circle}
+                placeholder="Table No."
+                value={tableNo}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setTableNo(e.target.value)
+                }
+              />
               {/* Password Input Field */}
-              <InputField icon={Lock} placeholder="Password" />
+              <InputField
+                icon={Lock}
+                placeholder="Password"
+                type="password"
+                value={password}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setPassword(e.target.value)
+                }
+              />
             </div>
 
             <div className="flex flex-row justify-center items-center">
               <button
-                type="submit"
+                type="button"
                 className="w-full h-12 px-8 text-white bg-[#0575E6] focus:outline-none font-medium rounded-full text-sm mb-4 mt-4"
-                onClick={() => navigateToDashboard()}
+                onClick={handleLogin}
+                disabled={loading}
               >
                 {loading ? (
                   <span className="flex gap-3 items-center justify-center">
