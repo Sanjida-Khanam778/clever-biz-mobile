@@ -18,9 +18,10 @@ import {
 } from "../components/dialog";
 import axiosInstance from "../lib/axios";
 import { CartProvider } from "../context/CartContext";
+import { UtensilsCrossed } from "lucide-react";
 
 const LayoutDashboard = () => {
-  const [selectedCategory, setSelectedCategory] = useState(0);
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   type Category = {
     id: number;
     Category_name: string;
@@ -49,6 +50,7 @@ const LayoutDashboard = () => {
   const [items, setItems] = useState<Item[]>([]);
   const [search, setSearch] = useState("");
   const searchTimeout = useRef<any>(null);
+  const [tableName, setTableName] = useState("");
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -60,12 +62,22 @@ const LayoutDashboard = () => {
       }
     };
     fetchCategories();
+  }, []);
 
-    const fetchItems = async (searchTerm = "") => {
+  useEffect(() => {
+    const fetchItems = async () => {
       try {
-        const url = searchTerm
-          ? `/customer/items/?search=${encodeURIComponent(searchTerm)}`
-          : "/customer/items/";
+        let url = "/customer/items/";
+        const params = [];
+        if (selectedCategory !== null && categories[selectedCategory]) {
+          params.push(`category=${categories[selectedCategory].id}`);
+        }
+        if (search) {
+          params.push(`search=${encodeURIComponent(search)}`);
+        }
+        if (params.length > 0) {
+          url += `?${params.join("&")}`;
+        }
         const response = await axiosInstance.get(url);
         setItems(response.data.results || []);
       } catch (error) {
@@ -76,12 +88,20 @@ const LayoutDashboard = () => {
     // Debounced search effect
     if (searchTimeout.current) clearTimeout(searchTimeout.current);
     searchTimeout.current = setTimeout(() => {
-      fetchItems(search);
+      fetchItems();
     }, 400);
     return () => {
       if (searchTimeout.current) clearTimeout(searchTimeout.current);
     };
-  }, [search]);
+  }, [search, selectedCategory, categories]);
+
+  useEffect(() => {
+    // Log userInfo from localStorage
+    const userInfo = localStorage.getItem("userInfo");
+    if (userInfo) {
+      setTableName(JSON.parse(userInfo).user.restaurants[0].table_name);
+    }
+  }, []);
 
   const showFood = (id: number) => {
     setSelectedItemId(id);
@@ -272,7 +292,7 @@ const LayoutDashboard = () => {
           </div>
           <div className="flex flex-col items-center">
             <div className="h-10 w-10 bg-accent/5 rounded-full flex justify-center items-center">
-              <h2 className="font-bold text-lg text-accent">2B</h2>
+              <h2 className="font-bold text-lg text-accent">{tableName}</h2>
             </div>
             <h6 className="text-xs uppercase font-medium text-icon-active">
               Table No
@@ -289,6 +309,22 @@ const LayoutDashboard = () => {
             </h2>
             {/* Horizontal scrollable category list */}
             <div className="w-full flex flex- flex-row gap-4 overflow-x-auto flex-wrap  py-4 scrollbar-hide">
+              <div
+                onClick={() => setSelectedCategory(null)}
+                className={cn(
+                  "flex-shrink-0 h-40 w-38 bg-sidebar flex flex-col gap-y-4 items-center justify-center rounded-lg shadow-sm py-4 last:mr-4 select-none cursor-pointer border",
+                  {
+                    "bg-[#F1F5FF] border-[#ABC1FF]": selectedCategory === null,
+                    "border-transparent": selectedCategory !== null,
+                  }
+                )}
+              >
+                <div className="h-16 w-16 rounded-xl overflow-hidden flex items-center justify-center bg-gray-100">
+                  {/* Food icon SVG */}
+                  <UtensilsCrossed />
+                </div>
+                <p className="text-primary font-medium">All Category</p>
+              </div>
               {categories?.map((cat, i) => (
                 <div
                   key={cat.id}
@@ -325,7 +361,7 @@ const LayoutDashboard = () => {
                   key={item.id}
                   onClick={() => showFood(item.id)}
                   className={cn(
-                    "aspect-[1/1.2] bg-sidebar flex flex-col gap-y-2 items-stretch justify-center rounded-lg shadow-sm pb-4 pt-0 px-4 select-none cursor-pointer"
+                    "aspect-[1/1.2] bg-sidebar flex flex-col gap-y-2 items-stretch justify-center rounded-lg shadow-sm p-4 select-none cursor-pointer"
                   )}
                 >
                   <div className="aspect-square rounded-xl overflow-hidden flex justify-center items-center object-contain">
@@ -341,7 +377,6 @@ const LayoutDashboard = () => {
                   <p className="text-icon-active text-wrap text-start font-bold text-2xl">
                     {`$${item.price}`}
                     <span className="text-sm font-normal">
-                      {" "}
                       / {item.category_name}
                     </span>
                   </p>
