@@ -1,5 +1,8 @@
-import food from "../assets/food.webp";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
+import { useEffect, useState } from "react";
+import axiosInstance from "../lib/axios";
+import { useCart } from "../context/CartContext";
+import toast from "react-hot-toast";
 
 interface ModalProps {
   isOpen: boolean;
@@ -8,58 +11,100 @@ interface ModalProps {
 interface ModalFoodDetailProps extends ModalProps {
   isOpen: boolean;
   close: () => void;
+  itemId?: number;
 }
 
 export const ModalFoodDetail: React.FC<ModalFoodDetailProps> = ({
   isOpen,
   close,
+  itemId,
 }) => {
+  const [item, setItem] = useState<any>(null);
+  const [showVideo, setShowVideo] = useState(false);
+  const { addToCart } = useCart();
+  useEffect(() => {
+    if (isOpen && itemId) {
+      axiosInstance.get(`/customer/items/${itemId}/`).then((res) => {
+        setItem(res.data);
+        setShowVideo(false);
+      });
+    } else {
+      setItem(null);
+      setShowVideo(false);
+    }
+  }, [isOpen, itemId]);
   return (
     <Dialog open={isOpen} onClose={() => close()} className="relative z-50">
       <DialogBackdrop className="fixed inset-0 bg-black/10" />
       <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
         <DialogPanel className=" bg-sidebar p-4 rounded-lg shadow-xl min-w-lg">
-          <div className="relative max-h-[300px] mx-auto aspect-square rounded-xl overflow-hidden flex justify-center items-center object-contain">
-            <img src={food} alt="img" />
-            <span className="absolute top-1/2 left-1/2 -translate-1/2">
-              <svg
-                width="31"
-                height="32"
-                viewBox="0 0 31 32"
-                className="h-12 w-12"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <rect
-                  width="30.8133"
-                  height="32"
-                  rx="15.4066"
-                  fill="#2962FF"
-                  fill-opacity="0.6"
+          <div className="relative max-h-[300px] mx-auto aspect-square rounded-xl overflow-hidden flex justify-center items-center object-contain cursor-pointer">
+            {showVideo && item?.video ? (
+              <video
+                src={item.video}
+                controls
+                autoPlay
+                className="w-full h-full object-cover"
+                onClick={(e) => e.stopPropagation()}
+              />
+            ) : (
+              <>
+                <img
+                  src={item?.image1}
+                  alt={item?.item_name || "img"}
+                  className="w-full h-full object-cover"
+                  onClick={() => item?.video && setShowVideo(true)}
+                  style={{ cursor: item?.video ? "pointer" : "default" }}
                 />
-                <path
-                  d="M22.1424 14.2795C22.4345 14.4455 22.6789 14.6933 22.8493 14.9964C23.0196 15.2995 23.1097 15.6464 23.1097 16C23.1097 16.3536 23.0196 16.7005 22.8493 17.0036C22.6789 17.3067 22.4345 17.5545 22.1424 17.7205L14.3505 22.2489C13.0958 22.9788 11.5547 22.0299 11.5547 20.5291V11.4716C11.5547 9.97014 13.0958 9.02181 14.3505 9.75044L22.1424 14.2795Z"
-                  fill="#DEE1EB"
-                />
-              </svg>
-            </span>
+                {item?.video && (
+                  <span
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10"
+                    onClick={() => setShowVideo(true)}
+                  >
+                    <svg
+                      width="64"
+                      height="64"
+                      viewBox="0 0 64 64"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <circle
+                        cx="32"
+                        cy="32"
+                        r="32"
+                        fill="#2962FF"
+                        fillOpacity="0.7"
+                      />
+                      <polygon points="26,20 48,32 26,44" fill="#fff" />
+                    </svg>
+                  </span>
+                )}
+              </>
+            )}
           </div>
           <p className="text-xl text-icon-active text-wrap font-medium">
-            {"Thai Chicken Role"}
+            {item?.item_name || "Loading..."}
           </p>
           <p className="text-sm text-wrap max-w-lg text-primary/40">
-            This pizza features a rich blend of four cheeses cheeses cheeses
-            cheeses—mozzarella, and parmesan, fontina, and gorgonzola—topped
-            with sun-dried .
+            {item?.description || ""}
           </p>
           <div className="flex items-center justify-between">
             <p className="text-icon-active text-wrap text-start font-bold text-2xl">
-              {"$75"}
-              <span className="text-sm font-normal">/slice</span>
+              {item ? `$${item.price}` : ""}
+              <span className="text-sm font-normal">
+                {" "}
+                / {item?.category_name || ""}
+              </span>
             </p>
             <button
               className="button-primary flex items-center gap-x-3 fill-primary-text"
-              onClick={close}
+              onClick={() => {
+                if (item) {
+                  addToCart(item);
+                  toast.success("Added to cart!");
+                  close();
+                }
+              }}
             >
               <span>
                 <svg

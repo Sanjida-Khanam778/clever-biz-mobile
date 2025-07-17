@@ -9,23 +9,82 @@ import {
   Logo,
 } from "../components/icons";
 import { cn } from "clsx-for-tailwind";
-import { useState } from "react";
-import veg from "../assets/veg.png";
-import food from "../assets/food.webp";
+import { useState, useEffect, useRef } from "react";
 import { SearchBox } from "../components/input";
 import {
   ModalCall,
   ModalCallConfirm,
   ModalFoodDetail,
 } from "../components/dialog";
+import axiosInstance from "../lib/axios";
+import { CartProvider } from "../context/CartContext";
 
 const LayoutDashboard = () => {
   const [selectedCategory, setSelectedCategory] = useState(0);
+  type Category = {
+    id: number;
+    Category_name: string;
+    slug: string;
+    image: string;
+  };
+  const [categories, setCategories] = useState<Category[]>([]);
   const [isDetailOpen, setDetailOpen] = useState(false);
+  const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
   const [isCallConfirmOpen, setCallConfirmOpen] = useState(false);
   const [isCallOpen, setCallOpen] = useState(false);
+  type Item = {
+    id: number;
+    item_name: string;
+    price: string;
+    description: string;
+    slug: string;
+    category: number;
+    restaurant: number;
+    category_name: string;
+    image1: string;
+    availability: boolean;
+    video: string;
+    restaurant_name: string;
+  };
+  const [items, setItems] = useState<Item[]>([]);
+  const [search, setSearch] = useState("");
+  const searchTimeout = useRef<any>(null);
 
-  const showFood = (_id: number) => {
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axiosInstance.get("/customer/categories/");
+        setCategories(response.data.results || []);
+      } catch (error) {
+        console.error("Failed to fetch categories", error);
+      }
+    };
+    fetchCategories();
+
+    const fetchItems = async (searchTerm = "") => {
+      try {
+        const url = searchTerm
+          ? `/customer/items/?search=${encodeURIComponent(searchTerm)}`
+          : "/customer/items/";
+        const response = await axiosInstance.get(url);
+        setItems(response.data.results || []);
+      } catch (error) {
+        console.error("Failed to fetch items", error);
+      }
+    };
+    fetchItems();
+    // Debounced search effect
+    if (searchTimeout.current) clearTimeout(searchTimeout.current);
+    searchTimeout.current = setTimeout(() => {
+      fetchItems(search);
+    }, 400);
+    return () => {
+      if (searchTimeout.current) clearTimeout(searchTimeout.current);
+    };
+  }, [search]);
+
+  const showFood = (id: number) => {
+    setSelectedItemId(id);
     setDetailOpen(true);
   };
 
@@ -39,7 +98,7 @@ const LayoutDashboard = () => {
     navigate("/");
   };
   return (
-    <>
+    <CartProvider>
       <div className="h-full w-full overflow-y-auto">
         {/* Left Sidebar  */}
         <nav className="fixed top-1/2 transform -translate-y-1/2 left-0 w-22 bg-sidebar rounded-r-xl shadow-lg flex flex-col items-center justify-center gap-y-4 py-4 text-xs font-light">
@@ -206,7 +265,10 @@ const LayoutDashboard = () => {
             <Logo />
           </div>
           <div className="flex-1">
-            <SearchBox />
+            <SearchBox
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
           </div>
           <div className="flex flex-col items-center">
             <div className="h-10 w-10 bg-accent/5 rounded-full flex justify-center items-center">
@@ -226,50 +288,62 @@ const LayoutDashboard = () => {
               Choose Category
             </h2>
             {/* Horizontal scrollable category list */}
-            <div className="w-full flex flex- flex-row gap-x-4 overflow-x-auto py-4 scrollbar-hide">
-              {[...Array(10)].map((_value, i) => {
-                return (
-                  <div
-                    key={i}
-                    onClick={() => setSelectedCategory(i)}
-                    className={cn(
-                      "flex-shrink-0 h-40 w-38 bg-sidebar flex flex-col gap-y-4 items-center justify-center rounded-lg shadow-sm py-4 last:mr-4 select-none cursor-pointer",
-                      {
-                        "bg-[#F1F5FF] border border-[#ABC1FF]":
-                          selectedCategory == i,
-                      }
-                    )}
-                  >
-                    <div className="h-16 w-16 rounded-xl overflow-hidden">
-                      <img src={veg} alt="img" />
-                    </div>
-                    <p className="text-primary font-medium">{"Fast food"}</p>
+            <div className="w-full flex flex- flex-row gap-4 overflow-x-auto flex-wrap  py-4 scrollbar-hide">
+              {categories?.map((cat, i) => (
+                <div
+                  key={cat.id}
+                  onClick={() => setSelectedCategory(i)}
+                  className={cn(
+                    "flex-shrink-0 h-40 w-38 bg-sidebar flex flex-col gap-y-4 items-center justify-center rounded-lg shadow-sm py-4 last:mr-4 select-none cursor-pointer",
+                    {
+                      "bg-[#F1F5FF] border border-[#ABC1FF]":
+                        selectedCategory === i,
+                    }
+                  )}
+                >
+                  <div className="h-16 w-16 rounded-xl overflow-hidden">
+                    <img
+                      src={cat.image}
+                      alt={cat.Category_name}
+                      className="object-cover w-full h-full"
+                    />
                   </div>
-                );
-              })}
+                  <p className="text-primary font-medium">
+                    {cat.Category_name}
+                  </p>
+                </div>
+              ))}
             </div>
             <h2 className="text-xl font-medium text-icon-active text-start mt-4">
               Choose Your Items
             </h2>
+
             {/* Food Items */}
-            <div className="grid grid-cols-3 xl:grid-cols-4 gap-5 me-4 py-4">
-              {[...Array(20)].map((value, i) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5 me-4 py-4">
+              {items?.map((item) => (
                 <div
-                  key={i}
-                  onClick={() => showFood(value)}
+                  key={item.id}
+                  onClick={() => showFood(item.id)}
                   className={cn(
                     "aspect-[1/1.2] bg-sidebar flex flex-col gap-y-2 items-stretch justify-center rounded-lg shadow-sm pb-4 pt-0 px-4 select-none cursor-pointer"
                   )}
                 >
                   <div className="aspect-square rounded-xl overflow-hidden flex justify-center items-center object-contain">
-                    <img src={food} alt="img" />
+                    <img
+                      src={item.image1}
+                      alt={item.item_name}
+                      className="object-cover w-full h-full"
+                    />
                   </div>
                   <p className="text-icon-active/80 text-wrap font-medium">
-                    {"Thai Chicken Role"}
+                    {item.item_name}
                   </p>
                   <p className="text-icon-active text-wrap text-start font-bold text-2xl">
-                    {"$75"}
-                    <span className="text-sm font-normal">/slice</span>
+                    {`$${item.price}`}
+                    <span className="text-sm font-normal">
+                      {" "}
+                      / {item.category_name}
+                    </span>
                   </p>
                 </div>
               ))}
@@ -284,6 +358,7 @@ const LayoutDashboard = () => {
       <ModalFoodDetail
         isOpen={isDetailOpen}
         close={() => setDetailOpen(false)}
+        itemId={selectedItemId ?? undefined}
       />
       {/* Call modal */}
       <ModalCallConfirm
@@ -303,7 +378,7 @@ const LayoutDashboard = () => {
           setCallOpen(false);
         }}
       />
-    </>
+    </CartProvider>
   );
 };
 

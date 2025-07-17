@@ -1,11 +1,19 @@
 /* Search box */
-export const SearchBox = () => {
+export const SearchBox = ({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}) => {
   return (
     <div className="flex items-center w-full bg-white rounded-lg shadow-sm overflow-hidden">
       <input
         type="text"
         placeholder="Search Food items"
         className="flex-grow px-4 py-3 text-gray-700 placeholder-gray-400 bg-white focus:outline-none"
+        value={value}
+        onChange={onChange}
       />
       <div className="w-16 h-14 bg-[#f5f7fe]">
         <span className="h-full w-full text-gray-400 flex justify-center items-center">
