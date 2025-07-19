@@ -1,21 +1,118 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useEffect, useRef } from "react";
 import { Send, Phone } from "lucide-react";
+import axiosInstance from "../lib/axios";
+import toast from "react-hot-toast";
+
+type Message = {
+  id: number;
+  is_from_device: boolean;
+  text: string;
+};
 
 const ScreenMessage = () => {
   return <MessagingUI />;
 };
 function MessagingUI() {
   const [inputValue, setInputValue] = useState("");
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState<Message[]>([]);
+  console.log("messages--------------", messages);
+  const ws = useRef<WebSocket | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
+  const userInfo = localStorage.getItem("userInfo");
+  const device_id = userInfo
+    ? JSON.parse(userInfo).user.restaurants[0].device_id
+    : null;
+  const restaurant_id = userInfo
+    ? JSON.parse(userInfo).user.restaurants[0].id
+    : null;
+
+  useEffect(() => {
+    const accessToken = localStorage.getItem("accessToken");
+    if (!userInfo || !accessToken) return;
+
+    const wsUrl = `ws://10.10.13.26:9000/ws/chat/${device_id}/?token=${accessToken}`;
+    ws.current = new window.WebSocket(wsUrl);
+
+    ws.current.onopen = () => {
+      console.log("WebSocket connected");
+    };
+    ws.current.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        // Only add if it's a message (not an error or other type)
+        if (data.message && typeof data.message === "string") {
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: prev.length + 1, // or use data.id if provided
+              is_from_device: data.is_from_device,
+              text: data.message,
+            },
+          ]);
+        }
+      } catch (e) {
+        console.error("Invalid message received:", event.data);
+      }
+    };
+    ws.current.onclose = () => {
+      console.log("WebSocket closed");
+    };
+
+    return () => {
+      ws.current?.close();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!userInfo) return;
+
+    const fetchMessages = async () => {
+      try {
+        const response = await axiosInstance.get(
+          `/message/chat/?device_id=${device_id}&restaurant_id=${restaurant_id}`
+        );
+        // Map the response to your Message type
+        const mapped = (response.data || []).map((msg: any) => ({
+          id: msg.id,
+          is_from_device: msg.is_from_device,
+          text: msg.message, // or msg.text if that's the field
+        }));
+        setMessages(mapped);
+      } catch (error) {
+        toast.error("Failed to load previous messages.");
+        setMessages([]);
+      }
+    };
+    if (device_id && restaurant_id) fetchMessages();
+  }, [device_id, restaurant_id]);
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
 
   const handleSubmit = (e: FormEvent<HTMLElement>) => {
     e.preventDefault();
-    if (inputValue.trim()) {
-      setMessages([
-        ...messages,
-        { id: messages.length + 1, sender: "user", text: inputValue },
-      ]);
-      setInputValue("");
+    if (!inputValue.trim()) return;
+    if (!ws.current || ws.current.readyState !== WebSocket.OPEN) {
+      toast.error("Connection lost. Please refresh the page.");
+      return;
+    }
+    try {
+      ws.current.send(
+        JSON.stringify({
+          type: "message",
+          message: inputValue,
+          // add any other fields your backend expects, e.g. device_id, user_id, etc.
+        })
+      );
+      setInputValue(""); // Clear input
+      // Optionally, add to local state for instant feedback:
+      // setMessages([...messages, { id: ..., is_from_device: false, text: inputValue }]);
+    } catch (error) {
+      toast.error("Failed to send message");
     }
   };
 
@@ -54,30 +151,52 @@ function MessagingUI() {
       {/* Message area */}
       <div className="flex-1 p-4 overflow-y-auto">
         <div className="flex flex-col space-y-4">
-          <div className="text-center my-4">
-            <span className="text-xs bg-gray-200 text-gray-500 px-4 py-1 rounded-full">
-              9:31 PM
-            </span>
-          </div>
-
-          {messages.map((message) => (
-            <div
-              key={message.id}
-              className={`flex ${
-                message.sender === "user" ? "justify-end" : "justify-start"
-              }`}
-            >
-              <div
-                className={`max-w-xs md:max-w-md p-3 rounded-xl ${
-                  message.sender === "user"
-                    ? "bg-blue-500 text-white rounded-br-none"
-                    : "bg-gray-200 text-gray-800 rounded-bl-none"
-                }`}
-              >
-                <p className="text-sm">{message.text}</p>
+          {messages.length > 0 && (
+            <>
+              <div className="text-center my-4">
+                <span className="text-xs bg-gray-200 text-gray-500 px-4 py-1 rounded-full">
+                  9:31 PM
+                </span>
               </div>
-            </div>
-          ))}
+              {messages
+                .filter((message) => message.text && message.text.trim() !== "")
+                .map((message) => (
+                  <div
+                    key={message.id}
+                    className={`flex items-end ${
+                      message.is_from_device === false
+                        ? "justify-start"
+                        : "justify-end"
+                    }`}
+                  >
+                    {/* Avatar for assistant (left) */}
+                    {message.is_from_device === false && (
+                      <div className="w-8 h-8 rounded-full bg-indigo-200 flex items-center justify-center mr-2">
+                        <span className="text-indigo-700 font-bold">A</span>
+                        {/* Or use an <img src="..." /> for a real avatar */}
+                      </div>
+                    )}
+                    <div
+                      className={`max-w-xs md:max-w-md p-3 rounded-xl ${
+                        message.is_from_device === false
+                          ? "bg-gray-200 text-gray-800 rounded-bl-none"
+                          : "bg-blue-500 text-white rounded-br-none"
+                      }`}
+                    >
+                      <p className="text-sm">{message.text}</p>
+                    </div>
+                    {/* Avatar for user (right) */}
+                    {message.is_from_device === true && (
+                      <div className="w-8 h-8 rounded-full bg-blue-200 flex items-center justify-center ml-2">
+                        <span className="text-blue-700 font-bold">U</span>
+                        {/* Or use an <img src="..." /> for a real avatar */}
+                      </div>
+                    )}
+                  </div>
+                ))}
+            </>
+          )}
+          <div ref={messagesEndRef} />
         </div>
       </div>
 
