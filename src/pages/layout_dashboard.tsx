@@ -100,6 +100,7 @@ const LayoutDashboard = () => {
     const userInfo = localStorage.getItem("userInfo");
     if (userInfo) {
       setTableName(JSON.parse(userInfo).user.restaurants[0].table_name);
+      console.log(JSON.parse(userInfo).user)
     }
   }, []);
 

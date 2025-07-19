@@ -1,15 +1,51 @@
 import { useNavigate } from "react-router";
 import { useCart } from "../context/CartContext";
+import axiosInstance from "../lib/axios";
+import toast from "react-hot-toast";
 
 const ScreenCart = () => {
   const navigate = useNavigate();
-  const { cart, removeFromCart } = useCart();
-
+  const { cart, removeFromCart, clearCart } = useCart();
+  console.log(cart);
   const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
   const totalCost = cart.reduce(
     (sum, item) => sum + Number(item.price) * item.quantity,
     0
   );
+
+  const handleOrderNow = async () => {
+    try {
+      const userInfo = localStorage.getItem("userInfo");
+      if (!userInfo) {
+        toast.error("User info not found");
+        return;
+      }
+
+      const userData = JSON.parse(userInfo);
+      const restaurant = userData.user.restaurants[0].id
+      const device = userData.user.restaurants[0].device_id;
+
+      const orderItems = cart.map((item) => ({
+        item: item.id,
+        quantity: item.quantity,
+      }));
+
+      const orderData = {
+        restaurant,
+        device,
+        order_items: orderItems,
+      };
+      console.log(orderData)
+
+      await axiosInstance.post("/customer/orders/", orderData);
+      toast.success("Order placed successfully!");
+      clearCart();
+      navigate("/dashboard/orders");
+    } catch (error) {
+      console.error("Failed to place order:", error);
+      toast.error("Failed to place order");
+    }
+  };
 
   return (
     <div className="h-full p-4 flex flex-col items-center">
@@ -81,7 +117,7 @@ const ScreenCart = () => {
           </p>
           <button
             className="mt-4 button-primary"
-            onClick={() => navigate("/dashboard/orders")}
+            onClick={handleOrderNow}
             disabled={cart.length === 0}
           >
             Order Now

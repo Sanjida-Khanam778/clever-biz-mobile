@@ -1,40 +1,86 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import veg from "../assets/veg.png";
+import axiosInstance from "../lib/axios";
+
+type OrderItem = {
+  item_name: string;
+  quantity: number;
+  price: string;
+};
+
+type Order = {
+  id: number;
+  order_items: OrderItem[];
+  status: string;
+  total_price: string;
+  created_time: string;
+  updated_time: string;
+  device: number;
+  restaurant: number;
+  device_name: string;
+};
 
 const ScreenOrders = () => {
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(false);
+  console.log(orders);
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const response = await axiosInstance.get(
+          "/customer/uncomplete/orders/?search=1"
+        );
+        setOrders(response.data.results || []);
+      } catch (error) {
+        console.error("Failed to fetch orders:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchOrders();
+  }, []);
   return (
     <div className="flex flex-col">
       <div className="mb-8">
         <h1 className="text-3xl font-medium">Order List</h1>
       </div>
-      <OrderItem />
+      {orders.length === 0 ? (
+        <p className="text-center text-gray-500">No orders found.</p>
+      ) : (
+        orders.map((order) => <OrderItem key={order.id} order={order} />)
+      )}
     </div>
   );
 };
-const OrderItem = () => {
-  const [quantity] = useState(4);
-
+const OrderItem = ({ order }: { order: Order }) => {
   return (
-    <div className="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm">
-      <div className="flex items-center">
+    <div className="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm mb-4">
+      <div className="flex items-center w-full">
         {/* Image */}
         <img
-          src={veg} // You can replace with your own image
-          alt="Pizza"
+          src={veg}
+          alt="Food"
           className="w-16 h-16 object-cover rounded-md"
         />
 
         {/* Text & Price */}
         <div className="ml-4 flex-1">
           <h2 className="font-semibold text-gray-800">
-            Four-Cheese Margherita Pizza with Sun-Dried Tomatoes
+            {order.order_items[0]?.item_name || "Order Item"}
           </h2>
-          <p className="text-gray-600">${169.43}</p>
+          <p className="text-gray-600">${order.total_price}</p>
 
           {/* Quantity Controller */}
           <div className="flex items-center space-x-2">
-            <span className="text-sm font-semibold">Quantity: {quantity}</span>
+            <span className="text-sm font-semibold">
+              Quantity: {order.order_items[0]?.quantity || 0}
+            </span>
           </div>
+
+          {/* Date and Time */}
+          <p className="text-xs text-gray-500 mt-1">
+            {new Date(order.created_time).toLocaleString()}
+          </p>
         </div>
 
         {/* Close Button */}
@@ -55,12 +101,12 @@ const OrderItem = () => {
           </svg>
         </button>
       </div>
-      <ProgressBar />
+      <ProgressBar status={order.status} />
     </div>
   );
 };
 
-const ProgressBar = () => {
+const ProgressBar = ({ status }: { status: string }) => {
   return (
     <div className="w-full mt-4">
       <div className="flex items-center justify-between w-full">
