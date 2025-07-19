@@ -6,28 +6,7 @@ const ScreenMessage = () => {
 };
 function MessagingUI() {
   const [inputValue, setInputValue] = useState("");
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      sender: "assistant",
-      text: "you and scrambled it to scramblef",
-    },
-    {
-      id: 2,
-      sender: "assistant",
-      text: "you and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in",
-    },
-    {
-      id: 3,
-      sender: "user",
-      text: "you and scrambled it to",
-    },
-    {
-      id: 4,
-      sender: "user",
-      text: "type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in",
-    },
-  ]);
+  const [messages, setMessages] = useState([]);
 
   const handleSubmit = (e: FormEvent<HTMLElement>) => {
     e.preventDefault();

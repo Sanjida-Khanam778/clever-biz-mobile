@@ -44,11 +44,13 @@ const ScreenOrders = () => {
       <div className="mb-8">
         <h1 className="text-3xl font-medium">Order List</h1>
       </div>
-      {orders.length === 0 ? (
-        <p className="text-center text-gray-500">No orders found.</p>
-      ) : (
-        orders.map((order) => <OrderItem key={order.id} order={order} />)
-      )}
+      <div className="flex flex-col max-h-[90vh] overflow-y-auto scrollbar-hide">
+        {orders.length === 0 ? (
+          <p className="text-center text-gray-500">No orders found.</p>
+        ) : (
+          orders.map((order) => <OrderItem key={order.id} order={order} />)
+        )}
+      </div>
     </div>
   );
 };
@@ -107,76 +109,86 @@ const OrderItem = ({ order }: { order: Order }) => {
 };
 
 const ProgressBar = ({ status }: { status: string }) => {
+  const getStepStatus = (step: string) => {
+    const statusOrder = [
+      "pending",
+      "accepted",
+      "preparing",
+      "prepared",
+      "served",
+      "completed",
+    ];
+    const currentIndex = statusOrder.indexOf(status?.toLowerCase()) || 0;
+    const stepIndex = statusOrder.indexOf(step);
+
+    // If status is pending, show accepted as completed by default
+    if (status?.toLowerCase() === "pending" && step === "accepted") {
+      return "completed";
+    }
+    if (stepIndex <= currentIndex) return "completed";
+    return "pending";
+  };
+
+  const steps = [
+    { key: "accepted", label: "Accepted" },
+    { key: "preparing", label: "Preparing" },
+    { key: "served", label: "Served" },
+  ];
+
   return (
     <div className="w-full mt-4">
       <div className="flex items-center justify-between w-full">
-        {/* Step 1 */}
-        <div className="flex items-center space-x-2">
-          <div className="w-4 h-4 rounded-full bg-blue-500 flex items-center justify-center text-white">
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-          </div>
-          <p className="text-blue-500">Accepted</p>
-        </div>
-        {/* Step 2 */}
-        <div className="flex items-center space-x-2">
-          <div className="w-4 h-4 rounded-full bg-blue-100 flex items-center justify-center text-white">
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-          </div>
-          <p>Preparing</p>
-        </div>
-        {/* Step 3 */}
-        <div className="flex items-center space-x-2">
-          <div className="w-4 h-4 rounded-full bg-gray-300 flex items-center justify-center text-white">
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-          </div>
-          <p>Prepared</p>
-        </div>
+        {steps.map((step) => {
+          const stepStatus = getStepStatus(step.key);
+          return (
+            <div key={step.key} className="flex items-center space-x-2">
+              <div
+                className={`w-4 h-4 rounded-full flex items-center justify-center ${
+                  stepStatus === "completed" ? "bg-blue-500" : "bg-gray-300"
+                } text-white`}
+              >
+                {stepStatus === "completed" && (
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                )}
+              </div>
+              <p
+                className={
+                  stepStatus === "completed" ? "text-blue-500" : "text-gray-500"
+                }
+              >
+                {step.label}
+              </p>
+            </div>
+          );
+        })}
       </div>
-
-      {/* Progress Line */}
       <div className="flex items-center justify-between mt-2">
-        <div className="flex-1 border-t-2 border-blue-500"></div>
-        <div className="flex-1 border-t-2 border-gray-300"></div>
-        <div className="flex-1 border-t-2 border-gray-300"></div>
+        {steps.map((step, index) => {
+          const stepStatus = getStepStatus(step.key);
+          return (
+            <div
+              key={step.key}
+              className={`flex-1 border-t-2 ${
+                stepStatus === "completed"
+                  ? "border-blue-500"
+                  : "border-gray-300"
+              }`}
+            ></div>
+          );
+        })}
       </div>
     </div>
   );
