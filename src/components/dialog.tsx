@@ -82,10 +82,10 @@ export const ModalFoodDetail: React.FC<ModalFoodDetailProps> = ({
               </>
             )}
           </div>
-          <p className="text-xl text-icon-active text-wrap font-medium">
+          <p className="text-xl text-icon-active text-wrap font-medium mt-4">
             {item?.item_name || "Loading..."}
           </p>
-          <p className="text-sm text-wrap max-w-lg text-primary/40">
+          <p className="text-sm text-wrap max-w-lg text-primary/40 mb-4">
             {item?.description || ""}
           </p>
           <div className="flex items-center justify-between">

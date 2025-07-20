@@ -86,7 +86,7 @@ const OrderItem = ({ order }: { order: Order }) => {
         </div>
 
         {/* Close Button */}
-        <button className="ml-4 text-gray-500 hover:text-gray-800">
+        {/* <button className="ml-4 text-gray-500 hover:text-gray-800">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -101,7 +101,7 @@ const OrderItem = ({ order }: { order: Order }) => {
               d="M6 18L18 6M6 6l12 12"
             />
           </svg>
-        </button>
+        </button> */}
       </div>
       <ProgressBar status={order.status} />
     </div>
