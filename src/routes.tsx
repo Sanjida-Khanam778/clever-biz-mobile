@@ -5,6 +5,10 @@ import ScreenMessage from "./pages/screen_message";
 import ScreenLogin from "./pages/screen_login";
 import ScreenOrders from "./pages/screen_orders";
 import ScreenCart from "./pages/screen_cart";
+import CheckoutButton from "./pages/CheckoutButton";
+import CheckoutPage from "./pages/CheckoutPage";
+import SuccessPage from "./pages/SuccessPage";
+import CancelPage from "./pages/CancelPage";
 
 function App() {
   return (
@@ -16,6 +20,9 @@ function App() {
         <Route path="message" element={<ScreenMessage />} />
         <Route path="cart" element={<ScreenCart />} />
         <Route path="orders" element={<ScreenOrders />} />
+        <Route path="checkout" element={<CheckoutPage />} />
+        <Route path="success" element={<SuccessPage />} />
+        <Route path="cancel" element={<CancelPage />} />
       </Route>
     </Routes>
   );
