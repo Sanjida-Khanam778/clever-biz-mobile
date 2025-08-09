@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import veg from "../assets/veg.png";
 import axiosInstance from "../lib/axios";
+import { useNavigate } from "react-router";
+import CheckoutButton from "./CheckoutButton";
 
 type OrderItem = {
   item_name: string;
@@ -18,11 +20,12 @@ type Order = {
   device: number;
   restaurant: number;
   device_name: string;
+  stripe_publishable_key: string;
 };
-
 const ScreenOrders = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(false);
+
   console.log(orders);
   useEffect(() => {
     const fetchOrders = async () => {
@@ -55,54 +58,33 @@ const ScreenOrders = () => {
   );
 };
 const OrderItem = ({ order }: { order: Order }) => {
+  const navigate = useNavigate();
   return (
     <div className="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm mb-4">
       <div className="flex items-center w-full">
-        {/* Image */}
         <img
           src={veg}
           alt="Food"
           className="w-16 h-16 object-cover rounded-md"
         />
 
-        {/* Text & Price */}
         <div className="ml-4 flex-1">
           <h2 className="font-semibold text-gray-800">
             {order.order_items[0]?.item_name || "Order Item"}
           </h2>
           <p className="text-gray-600">${order.total_price}</p>
-
-          {/* Quantity Controller */}
-          <div className="flex items-center space-x-2">
-            <span className="text-sm font-semibold">
-              Quantity: {order.order_items[0]?.quantity || 0}
-            </span>
-          </div>
-
-          {/* Date and Time */}
           <p className="text-xs text-gray-500 mt-1">
             {new Date(order.created_time).toLocaleString()}
           </p>
         </div>
 
-        {/* Close Button */}
-        {/* <button className="ml-4 text-gray-500 hover:text-gray-800">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            className="w-6 h-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button> */}
+        {/* Direct payment */}
+        <CheckoutButton
+          orderId={order.id}
+          publisheskey={order?.stripe_publishable_key}
+        />
       </div>
+
       <ProgressBar status={order.status} />
     </div>
   );
