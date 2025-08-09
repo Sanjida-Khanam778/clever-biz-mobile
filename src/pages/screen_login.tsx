@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Circle, Lock, type LucideIcon } from "lucide-react";
 import { Logo } from "../components/icons";
 import { useNavigate } from "react-router";
@@ -12,9 +13,7 @@ const ScreenLogin = () => {
   const [loading, setLoading] = useState(false);
   const [tableNo, setTableNo] = useState("");
   const [password, setPassword] = useState("");
-
   const navigate = useNavigate();
-
   const handleLogin = async () => {
     setLoading(true);
     try {
