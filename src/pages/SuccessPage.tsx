@@ -159,10 +159,6 @@ export default function SuccessPage() {
 
           <dl className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
             <div>
-              <dt className="text-gray-500">Order</dt>
-              <dd className="font-medium">{orderId ?? "—"}</dd>
-            </div>
-            <div>
               <dt className="text-gray-500">Paid at</dt>
               <dd className="font-medium">
                 {loading ? "…" : formatDate(payment?.created)}
@@ -257,24 +253,6 @@ export default function SuccessPage() {
               <dt className="text-gray-500">Email</dt>
               <dd className="font-medium">
                 {loading ? "…" : payment?.customer_details?.email || "—"}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-gray-500">Phone</dt>
-              <dd className="font-medium">
-                {loading ? "…" : payment?.customer_details?.phone || "—"}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-gray-500">Card</dt>
-              <dd className="font-medium">
-                {loading
-                  ? "…"
-                  : payment?.card_brand
-                  ? `${payment.card_brand.toUpperCase()} •••• ${
-                      payment.card_last4 ?? ""
-                    }`
-                  : "—"}
               </dd>
             </div>
           </dl>
