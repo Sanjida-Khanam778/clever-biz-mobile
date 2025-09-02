@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NavLink, Outlet, useNavigate } from "react-router";
 import {
   IconCall,
@@ -19,6 +20,7 @@ import {
 import axiosInstance from "../lib/axios";
 import { CartProvider } from "../context/CartContext";
 import { UtensilsCrossed } from "lucide-react";
+import CallerModal from "../components/CallerModal";
 
 const LayoutDashboard = () => {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
@@ -100,7 +102,7 @@ const LayoutDashboard = () => {
     const userInfo = localStorage.getItem("userInfo");
     if (userInfo) {
       setTableName(JSON.parse(userInfo).user.restaurants[0].table_name);
-      console.log(JSON.parse(userInfo).user)
+      console.log(JSON.parse(userInfo).user);
     }
   }, []);
 
@@ -118,6 +120,91 @@ const LayoutDashboard = () => {
     // Optional: redirect to home or login
     navigate("/");
   };
+
+  ////////////////////// caller api /////////////////////////////////////////
+
+  const [newsocket, setNewSocket] = useState<WebSocket | null>(null);
+  const [response, setResponse] = useState<any>(null);
+  const jwt = localStorage.getItem("accessToken");
+  const [idCallingModal, setIsCallingModal] = useState(false);
+  const userInfo = localStorage.getItem("userInfo");
+
+
+
+
+  useEffect(() => {
+    if (!jwt || !userInfo) {
+      return;
+    }
+    const newSoket = new WebSocket(
+      `wss://abc.winaclaim.com/ws/call/${JSON.parse(userInfo as string).user.restaurants[0].device_id}/?token=${jwt}`
+    );
+    newSoket.onopen = () => {
+      console.log("Socket Opened");
+    };
+    newSoket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      setResponse(data);
+      if (data.action === "incoming_call") {
+        setIsCallingModal(true);
+      }
+      if (data.action === "call_accepted") {
+        window.location.href = `https://clever-biz.vercel.app?device=${encodeURIComponent(
+          data?.device_id
+        )}&user=${encodeURIComponent(
+          userInfo ? JSON.parse(userInfo).user?.restaurants[0]?.table_name : ""
+        )}&deviceId=${encodeURIComponent("A1")}&receiver=${encodeURIComponent(
+          "Hyatt Benjamin"
+        )}&token=${encodeURIComponent(jwt)}`;
+      }
+    };
+
+    newSoket.onclose = () => {
+      console.log("Socket Closed");
+    };
+
+    newSoket.onerror = () => {
+      console.log("Socket Error");
+    };
+
+    setNewSocket(newSoket);
+
+    return () => {
+      newSoket.close();
+    };
+  }, [jwt, userInfo]);
+
+  const handleEndCall = (callerId: string, deviceId: string) => {
+    const data = {
+      action: "end_call",
+      call_id: callerId,
+      device_id: deviceId,
+    };
+    newsocket!.send(JSON.stringify(data));
+    setIsCallingModal(false);
+  };
+
+  const handleAnswerCall = (callerId: string, deviceId: string) => {
+    const data = {
+      action: "accept_call",
+      call_id: callerId,
+      device_id: deviceId,
+    };
+    newsocket!.send(JSON.stringify(data));
+    setIsCallingModal(false);
+  };
+
+  const confirmToCall = (receiver_id: any) => {
+    const data = {
+      action: "start_call",
+      receiver_id: receiver_id,
+      device_id: userInfo ? JSON.parse(userInfo).user?.restaurants[0]?.device_id : undefined,
+    };
+    newsocket!.send(JSON.stringify(data));
+
+
+  };
+
   return (
     <CartProvider>
       <div className="h-full w-full overflow-y-auto">
@@ -154,7 +241,11 @@ const LayoutDashboard = () => {
           {/* Call */}
           <button
             type="button"
-            onClick={() => setCallConfirmOpen(true)}
+            onClick={() =>
+              confirmToCall(
+                JSON.parse(userInfo as string).user.owner_id
+              )
+            }
             className={cn(
               "w-16 h-16 flex flex-col items-center justify-center",
               {
@@ -407,6 +498,14 @@ const LayoutDashboard = () => {
           setCallOpen(true);
         }}
       />
+      {idCallingModal && (
+        <CallerModal
+          email={JSON.parse(userInfo as string).user.username}
+          handleEndCall={handleEndCall}
+          handleAnswerCall={handleAnswerCall}
+          response={response}
+        />
+      )}
       {/* Call modal */}
       <ModalCall
         isOpen={isCallOpen}

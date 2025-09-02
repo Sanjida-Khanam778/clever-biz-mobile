@@ -1,8 +1,8 @@
-/* eslint-disable no-empty */
-/* src/components/CheckoutButton.tsx */
-import React, { useState } from "react";
+
+import { useState } from "react";
 import axiosInstance from "../lib/axios";
 import { loadStripe } from "@stripe/stripe-js";
+import toast from "react-hot-toast";
 
 export default function CheckoutButton({
   orderId,
@@ -38,7 +38,9 @@ export default function CheckoutButton({
             )}&order_id=${encodeURIComponent(String(orderId))}`;
             return;
           }
-        } catch (_) {}
+        } catch {
+          toast.error("Payment failed");
+        } 
       }
 
       // Checkout এ যাই
@@ -52,16 +54,8 @@ export default function CheckoutButton({
         sessionId: sessionId!,
       });
       if (error) throw error;
-    } catch (err: any) {
-      const status = err?.response?.status;
-      const data = err?.response?.data;
-      const text = typeof data === "string" ? data : JSON.stringify(data);
-      console.error("Create session failed:", status, text);
-      alert(
-        `Failed to create checkout session (${status ?? "unknown"}): ${
-          text || err.message
-        }`
-      );
+    } catch {
+      toast.error("Something went wrong");
     } finally {
       setLoading(false);
     }

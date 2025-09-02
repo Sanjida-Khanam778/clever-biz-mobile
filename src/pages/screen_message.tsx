@@ -31,7 +31,7 @@ function MessagingUI() {
     const accessToken = localStorage.getItem("accessToken");
     if (!userInfo || !accessToken) return;
 
-    const wsUrl = `ws://10.10.13.26:9000/ws/chat/${device_id}/?token=${accessToken}`;
+    const wsUrl = `wss://abc.winaclaim.com/ws/chat/${device_id}/?token=${accessToken}`;
     ws.current = new window.WebSocket(wsUrl);
 
     ws.current.onopen = () => {
@@ -51,7 +51,7 @@ function MessagingUI() {
             },
           ]);
         }
-      } catch (e) {
+      } catch {
         console.error("Invalid message received:", event.data);
       }
     };
@@ -62,7 +62,7 @@ function MessagingUI() {
     return () => {
       ws.current?.close();
     };
-  }, []);
+  }, [device_id, userInfo]);
 
   useEffect(() => {
     if (!userInfo) return;
@@ -73,19 +73,24 @@ function MessagingUI() {
           `/message/chat/?device_id=${device_id}&restaurant_id=${restaurant_id}`
         );
         // Map the response to your Message type
-        const mapped = (response.data || []).map((msg: any) => ({
+        type ApiMessage = {
+          id: number;
+          is_from_device: boolean;
+          message: string;
+        };
+        const mapped = (response.data || []).map((msg: ApiMessage) => ({
           id: msg.id,
           is_from_device: msg.is_from_device,
           text: msg.message, // or msg.text if that's the field
         }));
         setMessages(mapped);
-      } catch (error) {
+      } catch {
         toast.error("Failed to load previous messages.");
         setMessages([]);
       }
     };
     if (device_id && restaurant_id) fetchMessages();
-  }, [device_id, restaurant_id]);
+  }, [device_id, restaurant_id, userInfo]);
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -111,7 +116,7 @@ function MessagingUI() {
       setInputValue(""); // Clear input
       // Optionally, add to local state for instant feedback:
       // setMessages([...messages, { id: ..., is_from_device: false, text: inputValue }]);
-    } catch (error) {
+    } catch {
       toast.error("Failed to send message");
     }
   };

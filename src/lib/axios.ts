@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "http://10.10.13.26:8000/",
+  baseURL: "https://abc.winaclaim.com/",
   headers: {
     "Content-Type": "application/json",
   },
@@ -42,7 +42,7 @@ axiosInstance.interceptors.response.use(
           originalRequest.headers.Authorization = `Bearer ${access}`;
           return axiosInstance(originalRequest);
         }
-      } catch (refreshError) {
+      } catch {
         // Refresh token failed, redirect to login
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
