@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { NavLink, Outlet, useNavigate } from "react-router";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router";
 import {
   IconCall,
   IconCart,
@@ -21,6 +21,7 @@ import axiosInstance from "../lib/axios";
 import { CartProvider } from "../context/CartContext";
 import { UtensilsCrossed } from "lucide-react";
 import CallerModal from "../components/CallerModal";
+import { useWebSocket } from "../components/WebSocketContext";
 
 const LayoutDashboard = () => {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
@@ -35,6 +36,38 @@ const LayoutDashboard = () => {
   const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
   const [isCallConfirmOpen, setCallConfirmOpen] = useState(false);
   const [isCallOpen, setCallOpen] = useState(false);
+  const [hasNewMessage, setHasNewMessage] = useState(false);
+
+  // Access WebSocket context to use setNewMessageFlag
+  const { setNewMessageFlag } = useWebSocket();
+
+  // Check localStorage for newMessage flag when component mounts
+  useEffect(() => {
+    const newMessage = localStorage.getItem("newMessage");
+    setHasNewMessage(newMessage === "true"); // Show the green dot if newMessage is "true"
+  }, []); // Run only once when component mounts
+
+  // Listen for changes to the newMessage flag in localStorage
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const newMessage = localStorage.getItem("newMessage");
+      setHasNewMessage(newMessage === "true");
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
+
+  const handleMessageClick = () => {
+    // When clicked, clear the newMessage flag from localStorage
+    localStorage.setItem("newMessage", "false");
+    setHasNewMessage(false); // Immediately update the state to hide the green dot
+    setNewMessageFlag(false); // Update the global WebSocket context as well
+  };
+
   type Item = {
     id: number;
     item_name: string;
@@ -267,10 +300,12 @@ const LayoutDashboard = () => {
           <NavLink
             to="/dashboard/message"
             className={({ isActive }) =>
-              cn("w-16 h-16 flex flex-col items-center justify-center", {
-                "bg-icon-active-bg rounded-full": isActive,
-              })
+              cn(
+                "w-16 h-16 flex flex-col items-center justify-center relative",
+                { "bg-icon-active-bg rounded-full": isActive }
+              )
             }
+            onClick={handleMessageClick} // Handle click to remove the green dot
           >
             {({ isActive }) => (
               <>
@@ -286,10 +321,13 @@ const LayoutDashboard = () => {
                 >
                   Message
                 </p>
+                {/* Show the green dot if there's a new message */}
+                {hasNewMessage && !isActive && (
+                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white animate-pulse"></div>
+                )}
               </>
             )}
           </NavLink>
-
           {/* Cart */}
           <NavLink
             to="/dashboard/cart"
