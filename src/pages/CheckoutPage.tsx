@@ -10,6 +10,7 @@ export default function CheckoutPage() {
   if (!orderId) {
     return <p>Order ID missing</p>;
   }
+  console.log(orderId);
 
   return (
     <div className="p-4">
