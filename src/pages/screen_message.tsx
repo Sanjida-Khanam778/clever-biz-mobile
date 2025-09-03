@@ -15,6 +15,7 @@ const ScreenMessage = () => {
 function MessagingUI() {
   const [inputValue, setInputValue] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
+  const [hasNewMessage, setHasNewMessage] = useState(false);
   console.log("messages--------------", messages);
   const ws = useRef<WebSocket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -32,29 +33,34 @@ function MessagingUI() {
     if (!userInfo || !accessToken) return;
 
     const wsUrl = `wss://abc.winaclaim.com/ws/chat/${device_id}/?token=${accessToken}`;
-    ws.current = new window.WebSocket(wsUrl);
+    ws.current = new WebSocket(wsUrl);
 
     ws.current.onopen = () => {
       console.log("WebSocket connected");
     };
+
     ws.current.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        // Only add if it's a message (not an error or other type)
         if (data.message && typeof data.message === "string") {
           setMessages((prev) => [
             ...prev,
             {
-              id: prev.length + 1, // or use data.id if provided
+              id: prev.length + 1,
               is_from_device: data.is_from_device,
               text: data.message,
             },
           ]);
+          // Set the newMessage flag to "true" whenever a new message arrives
+          localStorage.setItem("newMessage", "true");
+          setHasNewMessage(true);
+
         }
-      } catch {
-        console.error("Invalid message received:", event.data);
+      } catch (error) {
+        console.error("Error processing message:", event.data);
       }
     };
+
     ws.current.onclose = () => {
       console.log("WebSocket closed");
     };
@@ -63,7 +69,14 @@ function MessagingUI() {
       ws.current?.close();
     };
   }, [device_id, userInfo]);
-
+  useEffect(() => {
+    // Check if the user is navigating to the message page
+    if (window.location.pathname === "/dashboard/message") {
+      // Clear the newMessage flag in localStorage
+      localStorage.setItem("newMessage", "false");
+      window.dispatchEvent(new Event("storage")); // Trigger UI update via storage event
+    }
+  }, []);
   useEffect(() => {
     if (!userInfo) return;
 

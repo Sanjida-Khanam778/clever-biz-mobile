@@ -200,7 +200,18 @@ const OrderRow = ({ order }: { order: Order }) => {
   );
 };
 
-const ProgressBar = ({ status }: { status: string }) => {
+// Main ProgressBar Component
+// import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
+
+type ProgressBarProps = {
+  status: string;
+  orderId: string;
+};
+
+const ProgressBar = ({ status, orderId }: ProgressBarProps) => {
+  const [currentStatus, setCurrentStatus] = useState(status.toLowerCase());
+
   const statusOrder = [
     "pending",
     "accepted",
@@ -209,165 +220,93 @@ const ProgressBar = ({ status }: { status: string }) => {
     "served",
     "completed",
   ];
-  const currentIndex = Math.max(0, statusOrder.indexOf(status?.toLowerCase()));
-
-  const getStepStatus = (step: string) => {
-    const stepIndex = statusOrder.indexOf(step);
-    if (status?.toLowerCase() === "pending" && step === "accepted")
-      return "completed";
-    return stepIndex <= currentIndex ? "completed" : "pending";
-  };
 
   const steps = [
-    { key: "accepted", label: "Accepted", icon: "✓" },
-    { key: "preparing", label: "Preparing", icon: "👨‍🍳" },
-    { key: "served", label: "Served", icon: "🍽️" },
+    { key: "accepted", label: "Accepted" },
+    { key: "preparing", label: "Preparing" },
+    { key: "served", label: "Served" },
+    { key: "completed", label: "Completed" },
   ];
+
+  const currentIndex = Math.max(0, statusOrder.indexOf(currentStatus));
+  const progressPercentage = (currentIndex / (statusOrder.length - 1)) * 100;
+
+  useEffect(() => {
+    setCurrentStatus(status.toLowerCase());
+
+    // 🔹 Create a WebSocket connection per order
+    const ws = new WebSocket(`wss://abc.winaclaim.com/ws/order/${orderId}/`);
+
+    ws.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.status) {
+          setCurrentStatus(data.status.toLowerCase());
+        }
+      } catch (err) {
+        console.error("WebSocket parse error:", err);
+      }
+    };
+
+    ws.onerror = (err) => console.error("WebSocket error:", err);
+
+    return () => {
+      ws.close();
+    };
+  }, [orderId, status]);
 
   return (
     <div className="w-full">
-      {/* Mobile Progress Bar (xs to sm screens) */}
-      <div className="sm:hidden">
-        <div className="flex flex-col space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-gray-600">
-              Order Status
-            </span>
-            <span className="text-xs text-gray-500 capitalize">{status}</span>
-          </div>
-
-          {/* Compact mobile progress */}
-          <div className="flex items-center space-x-2">
-            {steps.map((step, index) => {
-              const stepStatus = getStepStatus(step.key);
-              const isLast = index === steps.length - 1;
-
-              return (
-                <div key={step.key} className="flex items-center flex-1">
-                  <div className="flex flex-col items-center flex-1">
-                    <div
-                      className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium transition-all duration-300 ${
-                        stepStatus === "completed"
-                          ? "bg-green-500 text-white shadow-sm"
-                          : "bg-gray-200 text-gray-500"
-                      }`}
-                    >
-                      {stepStatus === "completed" ? (
-                        <svg
-                          className="w-3 h-3"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      ) : (
-                        <div className="w-2 h-2 bg-current rounded-full opacity-50" />
-                      )}
-                    </div>
-                    <span
-                      className={`text-xs mt-1 text-center font-medium transition-colors duration-300 ${
-                        stepStatus === "completed"
-                          ? "text-green-600"
-                          : "text-gray-400"
-                      }`}
-                    >
-                      {step.label}
-                    </span>
-                  </div>
-
-                  {!isLast && (
-                    <div
-                      className={`flex-1 h-0.5 mx-1 transition-colors duration-300 ${
-                        stepStatus === "completed"
-                          ? "bg-green-500"
-                          : "bg-gray-200"
-                      }`}
-                    />
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
+      {/* Title + Status */}
+      <div className="flex items-center justify-between mb-3">
+        <span className="text-sm font-semibold text-gray-800">
+          Order Progress
+        </span>
+        <span className="text-xs sm:text-sm capitalize bg-gray-100 px-2 py-1 rounded-full text-gray-600">
+          {currentStatus}
+        </span>
       </div>
 
-      {/* Desktop/Tablet Progress Bar (sm screens and up) */}
-      <div className="hidden sm:block">
-        <div className="flex items-center justify-between mb-4">
-          <span className="text-sm font-medium text-gray-700">
-            Order Progress
-          </span>
-          <span className="text-sm text-gray-500 capitalize bg-gray-100 px-2 py-1 rounded-full">
-            {status}
-          </span>
-        </div>
+      {/* Smooth Horizontal Progress */}
+      <div className="relative w-full h-3 bg-gray-200 rounded-full overflow-hidden mb-6">
+        <div
+          className="h-full bg-gradient-to-r from-green-400 to-green-600 rounded-full transition-all duration-700 ease-out"
+          style={{ width: `${progressPercentage}%` }}
+        />
+      </div>
 
-        <div className="relative">
-          {/* Progress Line */}
-          <div className="absolute top-4 left-4 right-4 h-0.5 bg-gray-200 -translate-y-1/2">
-            <div
-              className="h-full bg-green-500 transition-all duration-500 ease-out"
-              style={{
-                width: `${(currentIndex / (steps.length - 1)) * 100}%`,
-              }}
-            />
-          </div>
-
-          {/* Steps */}
-          <div className="relative flex justify-between">
-            {steps.map((step) => {
-              const stepStatus = getStepStatus(step.key);
-
-              return (
-                <div
-                  key={step.key}
-                  className="flex flex-col items-center group"
-                >
-                  <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all duration-300 transform group-hover:scale-105 ${
-                      stepStatus === "completed"
-                        ? "bg-green-500 text-white shadow-md"
-                        : "bg-white border-2 border-gray-300 text-gray-400"
-                    }`}
-                  >
-                    {stepStatus === "completed" ? (
-                      <svg
-                        className="w-4 h-4"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    ) : (
-                      <div className="w-2 h-2 bg-current rounded-full" />
-                    )}
-                  </div>
-
-                  <span
-                    className={`mt-2 text-sm font-medium text-center transition-colors duration-300 ${
-                      stepStatus === "completed"
-                        ? "text-green-600"
-                        : "text-gray-500"
-                    }`}
-                  >
-                    {step.label}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+      {/* Milestone Steps */}
+      <div className="flex justify-between relative">
+        {steps.map((step, idx) => {
+          const isCompleted = statusOrder.indexOf(step.key) <= currentIndex;
+          return (
+            <div key={step.key} className="flex flex-col items-center">
+              <div
+                className={`w-7 h-7 flex items-center justify-center rounded-full text-xs font-bold transition-all duration-300 ${
+                  isCompleted
+                    ? "bg-green-500 text-white shadow-md scale-110"
+                    : "bg-gray-200 text-gray-400"
+                }`}
+              >
+                {isCompleted ? "✓" : idx + 1}
+              </div>
+              <span
+                className={`mt-2 text-[11px] sm:text-xs font-medium ${
+                  isCompleted ? "text-green-600" : "text-gray-400"
+                }`}
+              >
+                {step.label}
+              </span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
 };
+
+// export default ProgressBar;
+
+// export default ProgressBar;
 
 export default ScreenOrders;
