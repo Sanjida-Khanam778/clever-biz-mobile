@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
-import axios from "axios";
+
 import axiosInstance from "../lib/axios";
 
 interface ReviewModalProps {

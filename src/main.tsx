@@ -3,10 +3,14 @@ import App from "./routes.tsx";
 import { BrowserRouter } from "react-router";
 import "./main.css";
 import { Toaster } from "react-hot-toast";
+import { MessageProvider } from "./components/MessageProvider.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <BrowserRouter>
-    <App />
+    <MessageProvider>
+      <App />
+    </MessageProvider>
+
     <Toaster />
   </BrowserRouter>
 );

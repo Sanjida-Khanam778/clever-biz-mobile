@@ -129,15 +129,14 @@ const LayoutDashboard = () => {
   const [idCallingModal, setIsCallingModal] = useState(false);
   const userInfo = localStorage.getItem("userInfo");
 
-
-
-
   useEffect(() => {
     if (!jwt || !userInfo) {
       return;
     }
     const newSoket = new WebSocket(
-      `wss://abc.winaclaim.com/ws/call/${JSON.parse(userInfo as string).user.restaurants[0].device_id}/?token=${jwt}`
+      `wss://abc.winaclaim.com/ws/call/${
+        JSON.parse(userInfo as string).user.restaurants[0].device_id
+      }/?token=${jwt}`
     );
     newSoket.onopen = () => {
       console.log("Socket Opened");
@@ -198,11 +197,11 @@ const LayoutDashboard = () => {
     const data = {
       action: "start_call",
       receiver_id: receiver_id,
-      device_id: userInfo ? JSON.parse(userInfo).user?.restaurants[0]?.device_id : undefined,
+      device_id: userInfo
+        ? JSON.parse(userInfo).user?.restaurants[0]?.device_id
+        : undefined,
     };
     newsocket!.send(JSON.stringify(data));
-
-
   };
 
   return (
@@ -242,9 +241,7 @@ const LayoutDashboard = () => {
           <button
             type="button"
             onClick={() =>
-              confirmToCall(
-                JSON.parse(userInfo as string).user.owner_id
-              )
+              confirmToCall(JSON.parse(userInfo as string).user.owner_id)
             }
             className={cn(
               "w-16 h-16 flex flex-col items-center justify-center",
