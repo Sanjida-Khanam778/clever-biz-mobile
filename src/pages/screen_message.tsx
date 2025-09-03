@@ -83,6 +83,7 @@ function MessagingUI() {
           is_from_device: msg.is_from_device,
           text: msg.message, // or msg.text if that's the field
         }));
+
         setMessages(mapped);
       } catch {
         toast.error("Failed to load previous messages.");
