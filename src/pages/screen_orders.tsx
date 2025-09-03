@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import veg from "../assets/veg.png";
 import axiosInstance from "../lib/axios";
 import CheckoutButton from "./CheckoutButton";
+import ReviewModal from "../components/ReviewModal";
 
 type OrderItem = {
   item_name: string;
@@ -81,6 +82,10 @@ const ScreenOrders = () => {
 const OrderRow = ({ order }: { order: Order }) => {
   // Support both order_items and items
   const items: OrderItem[] = order.order_items ?? order.items ?? [];
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const handleReview = () => {
+    setIsModalOpen(true); // Open the modal when "Review" button is clicked
+  };
 
   const formatMoney = (v: string | number) => {
     const n = typeof v === "string" ? parseFloat(v) : v;
@@ -98,53 +103,100 @@ const OrderRow = ({ order }: { order: Order }) => {
   };
 
   return (
-    <div className="flex flex-col p-4 bg-white rounded-lg shadow-sm mb-4">
-      <div className="flex items-start w-full gap-4">
-        <img
-          src={veg}
-          alt="Food"
-          className="w-16 h-16 object-cover rounded-md"
-        />
+    <>
+      <div className="flex flex-col bg-white rounded-xl shadow-sm mb-8 border border-gray-100 overflow-hidden">
+        {/* Main Content Container */}
+        <div className="p-3 sm:p-4 md:p-6">
+          <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
+            {/* Left Section: Image and Item Info */}
+            <div className="flex gap-3 sm:gap-4 flex-1">
+              {/* Food Image */}
+              <div className="flex-shrink-0">
+                <img
+                  src={veg}
+                  alt="Food"
+                  className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 object-cover rounded-lg shadow-sm"
+                />
+              </div>
 
-        <div className="flex-1">
-          <h2 className="font-semibold text-gray-800">
-            {items[0]?.item_name || `Order #${order.id}`}
-          </h2>
-          <p className="text-gray-600">
-            Total: {formatMoney(order.total_price)}
-          </p>
-          <p className="text-xs text-gray-500 mt-1">
-            {new Date(order.created_time).toLocaleString()}
-          </p>
+              {/* Order Details */}
+              <div className="flex-1 min-w-0 md:flex-row">
+                {" "}
+                {/* min-w-0 prevents text overflow */}
+                <h2 className="font-semibold text-gray-900 text-base sm:text-lg md:text-xl truncate">
+                  {items[0]?.item_name || `Order #${order.id}`}
+                </h2>
+                {/* Price and Date Row */}
+                <div className="flex flex-col xs:flex-row xs:items-center xs:justify-between gap-1 xs:gap-2 mt-1">
+                  <p className="text-gray-700 font-medium text-sm sm:text-base">
+                    Total: {formatMoney(order.total_price)}
+                  </p>
+                  <p className="text-xs sm:text-sm text-gray-500 xs:text-right">
+                    {new Date(order.created_time).toLocaleString()}
+                  </p>
+                </div>
+                {/* Items List */}
+                {items.length > 0 ? (
+                  <div className="mt-3 space-y-1.5">
+                    <p className="text-xs sm:text-sm font-medium text-gray-600 mb-2">
+                      Order Items:
+                    </p>
+                    <ul className="space-y-1">
+                      {items.map((it, idx) => (
+                        <li
+                          key={idx}
+                          className="text-xs sm:text-sm text-gray-700 flex flex-wrap gap-1"
+                        >
+                          <span className="font-medium text-gray-900">
+                            {it.item_name}
+                          </span>
+                          <span className="text-gray-500">× {it.quantity}</span>
+                          <span className="text-gray-600 ml-auto">
+                            {formatMoney(it.price)}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : (
+                  <p className="mt-3 text-xs sm:text-sm text-gray-400 italic">
+                    No items in this order.
+                  </p>
+                )}
+              </div>
+            </div>
 
-          {/* Full line item list */}
-          {items.length > 0 ? (
-            <ul className="mt-3 space-y-1">
-              {items.map((it, idx) => (
-                <li key={idx} className="text-sm text-gray-700">
-                  <span className="font-medium">{it.item_name}</span>{" "}
-                  <span className="text-gray-500">× {it.quantity}</span>{" "}
-                  <span className="text-gray-600">
-                    — {formatMoney(it.price)}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="mt-3 text-sm text-gray-400">
-              No items in this order.
-            </p>
-          )}
+            {/* Right Section: Action Buttons */}
+            <div className="flex flex-row lg:flex-col gap-2 sm:gap-3 lg:w-auto lg:min-w-[140px] lg:justify-start">
+              <div className="flex-1 lg:flex-none">
+                <CheckoutButton orderId={order.id} />
+              </div>
+              <div className="flex-1 lg:flex-none">
+                <button
+                  onClick={handleReview}
+                  className="w-full px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg bg-green-600 text-white text-sm sm:text-base font-medium hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-1 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
+                  aria-label="Write a review for this order"
+                >
+                  Review
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Pay now */}
-        <div className="shrink-0 self-start">
-          <CheckoutButton orderId={order.id} />
+        {/* Progress Bar Section */}
+        <div className="border-t border-gray-100 bg-gray-50 px-3 py-4 sm:px-4 sm:py-5 md:px-6">
+          <ProgressBar status={order.status} />
         </div>
       </div>
 
-      <ProgressBar status={order.status} />
-    </div>
+      {/* Review Modal */}
+      <ReviewModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        orderId={order.id}
+      />
+    </>
   );
 };
 
@@ -158,6 +210,7 @@ const ProgressBar = ({ status }: { status: string }) => {
     "completed",
   ];
   const currentIndex = Math.max(0, statusOrder.indexOf(status?.toLowerCase()));
+
   const getStepStatus = (step: string) => {
     const stepIndex = statusOrder.indexOf(step);
     if (status?.toLowerCase() === "pending" && step === "accepted")
@@ -166,64 +219,152 @@ const ProgressBar = ({ status }: { status: string }) => {
   };
 
   const steps = [
-    { key: "accepted", label: "Accepted" },
-    { key: "preparing", label: "Preparing" },
-    { key: "served", label: "Served" },
+    { key: "accepted", label: "Accepted", icon: "✓" },
+    { key: "preparing", label: "Preparing", icon: "👨‍🍳" },
+    { key: "served", label: "Served", icon: "🍽️" },
   ];
 
   return (
-    <div className="w-full mt-4">
-      <div className="flex items-center justify-between w-full">
-        {steps.map((step) => {
-          const stepStatus = getStepStatus(step.key);
-          return (
-            <div key={step.key} className="flex items-center space-x-2">
-              <div
-                className={`w-4 h-4 rounded-full flex items-center justify-center ${
-                  stepStatus === "completed" ? "bg-blue-500" : "bg-gray-300"
-                } text-white`}
-              >
-                {stepStatus === "completed" && (
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M5 13l4 4L19 7"
+    <div className="w-full">
+      {/* Mobile Progress Bar (xs to sm screens) */}
+      <div className="sm:hidden">
+        <div className="flex flex-col space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium text-gray-600">
+              Order Status
+            </span>
+            <span className="text-xs text-gray-500 capitalize">{status}</span>
+          </div>
+
+          {/* Compact mobile progress */}
+          <div className="flex items-center space-x-2">
+            {steps.map((step, index) => {
+              const stepStatus = getStepStatus(step.key);
+              const isLast = index === steps.length - 1;
+
+              return (
+                <div key={step.key} className="flex items-center flex-1">
+                  <div className="flex flex-col items-center flex-1">
+                    <div
+                      className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium transition-all duration-300 ${
+                        stepStatus === "completed"
+                          ? "bg-green-500 text-white shadow-sm"
+                          : "bg-gray-200 text-gray-500"
+                      }`}
+                    >
+                      {stepStatus === "completed" ? (
+                        <svg
+                          className="w-3 h-3"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      ) : (
+                        <div className="w-2 h-2 bg-current rounded-full opacity-50" />
+                      )}
+                    </div>
+                    <span
+                      className={`text-xs mt-1 text-center font-medium transition-colors duration-300 ${
+                        stepStatus === "completed"
+                          ? "text-green-600"
+                          : "text-gray-400"
+                      }`}
+                    >
+                      {step.label}
+                    </span>
+                  </div>
+
+                  {!isLast && (
+                    <div
+                      className={`flex-1 h-0.5 mx-1 transition-colors duration-300 ${
+                        stepStatus === "completed"
+                          ? "bg-green-500"
+                          : "bg-gray-200"
+                      }`}
                     />
-                  </svg>
-                )}
-              </div>
-              <p
-                className={
-                  stepStatus === "completed" ? "text-blue-500" : "text-gray-500"
-                }
-              >
-                {step.label}
-              </p>
-            </div>
-          );
-        })}
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </div>
-      <div className="flex items-center justify-between mt-2">
-        {steps.map((step) => {
-          const stepStatus = getStepStatus(step.key);
-          return (
+
+      {/* Desktop/Tablet Progress Bar (sm screens and up) */}
+      <div className="hidden sm:block">
+        <div className="flex items-center justify-between mb-4">
+          <span className="text-sm font-medium text-gray-700">
+            Order Progress
+          </span>
+          <span className="text-sm text-gray-500 capitalize bg-gray-100 px-2 py-1 rounded-full">
+            {status}
+          </span>
+        </div>
+
+        <div className="relative">
+          {/* Progress Line */}
+          <div className="absolute top-4 left-4 right-4 h-0.5 bg-gray-200 -translate-y-1/2">
             <div
-              key={step.key}
-              className={`flex-1 border-t-2 ${
-                stepStatus === "completed"
-                  ? "border-blue-500"
-                  : "border-gray-300"
-              }`}
+              className="h-full bg-green-500 transition-all duration-500 ease-out"
+              style={{
+                width: `${(currentIndex / (steps.length - 1)) * 100}%`,
+              }}
             />
-          );
-        })}
+          </div>
+
+          {/* Steps */}
+          <div className="relative flex justify-between">
+            {steps.map((step) => {
+              const stepStatus = getStepStatus(step.key);
+
+              return (
+                <div
+                  key={step.key}
+                  className="flex flex-col items-center group"
+                >
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all duration-300 transform group-hover:scale-105 ${
+                      stepStatus === "completed"
+                        ? "bg-green-500 text-white shadow-md"
+                        : "bg-white border-2 border-gray-300 text-gray-400"
+                    }`}
+                  >
+                    {stepStatus === "completed" ? (
+                      <svg
+                        className="w-4 h-4"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    ) : (
+                      <div className="w-2 h-2 bg-current rounded-full" />
+                    )}
+                  </div>
+
+                  <span
+                    className={`mt-2 text-sm font-medium text-center transition-colors duration-300 ${
+                      stepStatus === "completed"
+                        ? "text-green-600"
+                        : "text-gray-500"
+                    }`}
+                  >
+                    {step.label}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </div>
   );

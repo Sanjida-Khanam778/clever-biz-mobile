@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import axiosInstance from "../lib/axios";
 import { loadStripe } from "@stripe/stripe-js";
@@ -9,6 +8,7 @@ export default function CheckoutButton({
 }: {
   orderId: number | string;
 }) {
+  console.log(orderId);
   const [loading, setLoading] = useState(false);
   const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PK!);
 
@@ -19,14 +19,13 @@ export default function CheckoutButton({
       const res = await axiosInstance.post(
         `/customer/create-checkout-session/${orderId}/`
       );
-
+      // create-checkout-session/<int:order_id>/</int:order_id>
       const url: string | undefined = res?.data?.url;
       const sessionId: string | undefined = res?.data?.sessionId;
 
       if (!sessionId && !url)
         throw new Error("No checkout URL or sessionId returned");
 
-      // (Optional) আগেই কনফার্ম হয়ে থাকলে success এ পাঠাই
       if (sessionId) {
         try {
           const probe = await axiosInstance.get(`/customer/payment/success/`, {
@@ -40,7 +39,7 @@ export default function CheckoutButton({
           }
         } catch {
           toast.error("Payment failed");
-        } 
+        }
       }
 
       // Checkout এ যাই
