@@ -65,7 +65,7 @@ export default function CheckoutButton({
       type="button"
       onClick={handleCheckout}
       disabled={loading}
-      className="px-4 py-2 rounded-md bg-green-600 text-white hover:bg-green-700 disabled:opacity-60"
+      className="w-full px-4 py-2 rounded-md bg-green-600 text-white hover:bg-green-700 disabled:opacity-60"
     >
       {loading ? "Processing..." : "Checkout"}
     </button>
