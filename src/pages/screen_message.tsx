@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { FormEvent, useState, useEffect, useRef } from "react";
 import { Send, Phone } from "lucide-react";
 import axiosInstance from "../lib/axios";
@@ -16,6 +17,7 @@ function MessagingUI() {
   const [inputValue, setInputValue] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [hasNewMessage, setHasNewMessage] = useState(false);
+  console.log(hasNewMessage);
   console.log("messages--------------", messages);
   const ws = useRef<WebSocket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -54,7 +56,6 @@ function MessagingUI() {
           // Set the newMessage flag to "true" whenever a new message arrives
           localStorage.setItem("newMessage", "true");
           setHasNewMessage(true);
-
         }
       } catch (error) {
         console.error("Error processing message:", event.data);

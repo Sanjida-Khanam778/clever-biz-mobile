@@ -3,7 +3,8 @@ import veg from "../assets/veg.png";
 import axiosInstance from "../lib/axios";
 import CheckoutButton from "./CheckoutButton";
 import ReviewModal from "../components/ReviewModal";
-
+// import { CheckCircle, Clock, Utensils, Package } from "lucide-react";
+// import { CheckCircle, Clock, Utensils, Package } from "lucide-react";
 type OrderItem = {
   item_name: string;
   quantity: number;
@@ -28,6 +29,12 @@ const ScreenOrders = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
+  
+  const accessToken = localStorage.getItem("accessToken");
+  const userInfo = localStorage.getItem("userInfo");
+  const device_id = userInfo
+    ? JSON.parse(userInfo).user.restaurants[0].device_id
+    : null;
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -54,7 +61,30 @@ const ScreenOrders = () => {
       }
     };
     fetchOrders();
-  }, []);
+
+     if (!accessToken) {
+    return
+  }
+  const newSoket = new WebSocket(`wss://abc.winaclaim.com/ws/order/${device_id}/?token=${accessToken}`)
+
+
+  newSoket.onopen = () => {
+    console.log("WebSocket connection established");
+    }
+
+  newSoket.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    console.log("Received message:", data);
+    fetchOrders();
+  }
+  newSoket.onclose = () => {
+    console.log("WebSocket connection closed");
+  }
+
+  return () => {
+    newSoket.close();
+  }
+  }, [device_id, accessToken]);
 
   return (
     <div className="flex flex-col">
@@ -79,7 +109,7 @@ const ScreenOrders = () => {
   );
 };
 
-const OrderRow = ({ order }: { order: Order }) => {
+const OrderRow = ({ order }: { order: Order}) => {
   // Support both order_items and items
   const items: OrderItem[] = order.order_items ?? order.items ?? [];
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -102,9 +132,11 @@ const OrderRow = ({ order }: { order: Order }) => {
     return v ?? "—";
   };
 
+
+
   return (
     <>
-      <div className="flex flex-col bg-white rounded-xl shadow-sm mb-8 border border-gray-100 overflow-hidden">
+      <div className="flex flex-col bg-white rounded-xl shadow-sm mb-8 border border-gray-100 overflow-hidden min-h-88">
         {/* Main Content Container */}
         <div className="p-3 sm:p-4 md:p-6">
           <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
@@ -174,7 +206,7 @@ const OrderRow = ({ order }: { order: Order }) => {
               <div className="flex-1 lg:flex-none">
                 <button
                   onClick={handleReview}
-                  className="w-full px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg bg-green-600 text-white text-sm sm:text-base font-medium hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-1 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="w-full px-4 py-2 rounded-md bg-sky-500 text-white hover:bg-green-700 disabled:opacity-60"
                   aria-label="Write a review for this order"
                 >
                   Review
@@ -200,17 +232,17 @@ const OrderRow = ({ order }: { order: Order }) => {
   );
 };
 
-// Main ProgressBar Component
-// import { useEffect, useState } from "react";
-// import { useEffect, useState } from "react";
-
 type ProgressBarProps = {
   status: string;
-  orderId: string;
 };
 
-const ProgressBar = ({ status, orderId }: ProgressBarProps) => {
-  const [currentStatus, setCurrentStatus] = useState(status.toLowerCase());
+const ProgressBar = ({ status }: ProgressBarProps) => {
+  const [currentStatus] = useState(status.toLowerCase());
+  const [connectionStatus] = useState<
+    "connecting" | "connected" | "disconnected" | "error"
+  >("disconnected");
+
+
 
   const statusOrder = [
     "pending",
@@ -218,67 +250,73 @@ const ProgressBar = ({ status, orderId }: ProgressBarProps) => {
     "preparing",
     "prepared",
     "served",
-    "completed",
+    // "completed",
   ];
 
   const steps = [
     { key: "accepted", label: "Accepted" },
     { key: "preparing", label: "Preparing" },
     { key: "served", label: "Served" },
-    { key: "completed", label: "Completed" },
   ];
 
+
   const currentIndex = Math.max(0, statusOrder.indexOf(currentStatus));
-  const progressPercentage = (currentIndex / (statusOrder.length - 1)) * 100;
+  const progressPercentage = (currentIndex / (statusOrder?.length - 1)) * 100;
 
-  useEffect(() => {
-    setCurrentStatus(status.toLowerCase());
+  console.log("Current Status:", currentStatus);
+  console.log("Current Index:", currentIndex);
+  console.log("Progress Percentage:", progressPercentage);
 
-    // 🔹 Create a WebSocket connection per order
-    const ws = new WebSocket(`wss://abc.winaclaim.com/ws/order/${orderId}/`);
+// Add dependencies to prevent stale closures
 
-    ws.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        if (data.status) {
-          setCurrentStatus(data.status.toLowerCase());
-        }
-      } catch (err) {
-        console.error("WebSocket parse error:", err);
-      }
-    };
 
-    ws.onerror = (err) => console.error("WebSocket error:", err);
-
-    return () => {
-      ws.close();
-    };
-  }, [orderId, status]);
+  if (currentIndex === -1) {
+    console.warn(`Status "${currentStatus}" not found in statusOrder array`);
+  }
 
   return (
     <div className="w-full">
-      {/* Title + Status */}
       <div className="flex items-center justify-between mb-3">
         <span className="text-sm font-semibold text-gray-800">
           Order Progress
         </span>
-        <span className="text-xs sm:text-sm capitalize bg-gray-100 px-2 py-1 rounded-full text-gray-600">
-          {currentStatus}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="text-xs sm:text-sm capitalize bg-gray-100 px-2 py-1 rounded-full text-gray-600">
+            {currentStatus}
+          </span>
+          {/* Connection status indicator */}
+          <div
+            className={`w-2 h-2 rounded-full transition-colors duration-300 ${
+              connectionStatus === "connected"
+                ? "bg-green-500"
+                : connectionStatus === "connecting"
+                ? "bg-yellow-500 animate-pulse"
+                : connectionStatus === "error"
+                ? "bg-red-500"
+                : "bg-gray-400"
+            }`}
+            title={`WebSocket ${connectionStatus}`}
+          />
+        </div>
       </div>
 
       {/* Smooth Horizontal Progress */}
       <div className="relative w-full h-3 bg-gray-200 rounded-full overflow-hidden mb-6">
         <div
           className="h-full bg-gradient-to-r from-green-400 to-green-600 rounded-full transition-all duration-700 ease-out"
-          style={{ width: `${progressPercentage}%` }}
+          style={{
+            width: `${Math.max(0, Math.min(100, progressPercentage))}%`,
+            minWidth: progressPercentage > 0 ? "2px" : "0px",
+          }}
         />
       </div>
 
       {/* Milestone Steps */}
       <div className="flex justify-between relative">
         {steps.map((step, idx) => {
-          const isCompleted = statusOrder.indexOf(step.key) <= currentIndex;
+          const stepIndex = statusOrder.indexOf(step.key);
+          const isCompleted = stepIndex !== -1 && stepIndex <= currentIndex;
+
           return (
             <div key={step.key} className="flex flex-col items-center">
               <div
@@ -291,7 +329,7 @@ const ProgressBar = ({ status, orderId }: ProgressBarProps) => {
                 {isCompleted ? "✓" : idx + 1}
               </div>
               <span
-                className={`mt-2 text-[11px] sm:text-xs font-medium ${
+                className={`mt-2 text-[11px] sm:text-xs font-medium text-center max-w-[60px] ${
                   isCompleted ? "text-green-600" : "text-gray-400"
                 }`}
               >
@@ -301,12 +339,23 @@ const ProgressBar = ({ status, orderId }: ProgressBarProps) => {
           );
         })}
       </div>
+
+      {/* Connection error message */}
+      {connectionStatus === "error" && (
+        <div className="mt-3 text-xs text-red-600 bg-red-50 px-2 py-1 rounded flex items-center gap-1">
+          <span className="w-1 h-1 bg-red-500 rounded-full"></span>
+          Connection issue. Updates may be delayed.
+        </div>
+      )}
+
+      {/* Connecting message */}
+      {connectionStatus === "connecting" && (
+        <div className="mt-3 text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded flex items-center gap-1">
+          <span className="w-1 h-1 bg-blue-500 rounded-full animate-pulse"></span>
+          Connecting to live updates...
+        </div>
+      )}
     </div>
   );
 };
-
-// export default ProgressBar;
-
-// export default ProgressBar;
-
 export default ScreenOrders;
