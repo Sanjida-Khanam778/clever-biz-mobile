@@ -1,4 +1,6 @@
 import { Phone, PhoneOff } from "lucide-react";
+import ringning from "../assets/ringing.mp3";
+import calling from "../assets/calling.mp3";
 
 
 type CallerModalProps = {
@@ -8,7 +10,7 @@ type CallerModalProps = {
     from: string;
     call_id: string;
     device_id: string;
-    // add other fields if needed
+    action?: string; // add other fields if needed
   };
   email: string;
 };
@@ -49,6 +51,13 @@ export default function CallerModal({
             >
               <Phone className="w-6 h-6 text-white" />
             </button>
+          )}
+
+          {response.from === email && response?.action === "incoming_call" && (
+            <audio src={ringning} autoPlay loop className="opacity-0"></audio>
+          )}
+          {response?.action === "incoming_call" && (
+            <audio src={calling} autoPlay loop className="opacity-0"></audio>
           )}
 
           {/* End Call Button */}
