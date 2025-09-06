@@ -180,6 +180,9 @@ const LayoutDashboard = () => {
       if (data.action === "incoming_call") {
         setIsCallingModal(true);
       }
+      if (data.action === "call_ended") {
+        setIsCallingModal(false);
+      }
       if (data.action === "call_accepted") {
         window.location.href = `https://clever-biz.vercel.app?device=${encodeURIComponent(
           data?.device_id
