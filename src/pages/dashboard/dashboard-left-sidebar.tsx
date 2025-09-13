@@ -1,3 +1,4 @@
+import { useMediaQuery } from "@uidotdev/usehooks";
 import { cn } from "clsx-for-tailwind";
 import { NavLink } from "react-router";
 import {
@@ -26,6 +27,8 @@ export const DashboardLeftSidebar = ({
   handleLogout,
   setIsMobileMenuOpen,
 }: Props) => {
+  const isLargeDevice = useMediaQuery("only screen and (min-width : 993px)");
+
   return (
     <nav className="fixed top-1/2 transform -translate-y-1/2 left-0 w-22 bg-sidebar rounded-r-xl shadow-lg flex flex-col items-center justify-center gap-y-4 py-4 text-xs font-light">
       {/* Home */}
@@ -88,8 +91,8 @@ export const DashboardLeftSidebar = ({
           })
         }
         onClick={() => {
-          setIsMobileMenuOpen(true);
           handleMessageClick();
+          if (!isLargeDevice) setIsMobileMenuOpen(true);
         }}
       >
         {({ isActive }) => (
@@ -116,7 +119,7 @@ export const DashboardLeftSidebar = ({
       {/* Cart */}
       <NavLink
         onClick={() => {
-          setIsMobileMenuOpen(true);
+          if (!isLargeDevice) setIsMobileMenuOpen(true);
         }}
         to="/dashboard/cart"
         className={({ isActive }) =>
@@ -145,7 +148,7 @@ export const DashboardLeftSidebar = ({
       {/* Orders */}
       <NavLink
         onClick={() => {
-          setIsMobileMenuOpen(true);
+          if (!isLargeDevice) setIsMobileMenuOpen(true);
         }}
         to="/dashboard/orders"
         className={cn("w-16 h-16 flex flex-col items-center justify-center", {

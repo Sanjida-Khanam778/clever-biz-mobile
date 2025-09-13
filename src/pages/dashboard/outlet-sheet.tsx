@@ -14,7 +14,7 @@ export const OutletSheet = ({ open, onOpenChange }: OutletSheetProps) => {
         <Menu />
       </SheetTrigger>
 
-      <SheetContent side="right" className="p-6">
+      <SheetContent side="right" className="p-6 overflow-y-auto">
         <Outlet />
       </SheetContent>
     </Sheet>
