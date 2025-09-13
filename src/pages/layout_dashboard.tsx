@@ -15,19 +15,22 @@ import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { Outlet, useNavigate } from "react-router";
 import { CartProvider } from "../context/CartContext";
 import axiosInstance from "../lib/axios";
-import { CategoryItem } from "./dashboard/category-item";
+import { type CategoryItemType, CategoryItem } from "./dashboard/category-item";
 import { DashboardLeftSidebar } from "./dashboard/dashboard-left-sidebar";
 import { FoodItem, FoodItems } from "./dashboard/food-items";
+import { OutletSheet } from "./dashboard/outlet-sheet";
 
 const LayoutDashboard = () => {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
 
-  const [categories, setCategories] = useState<CategoryItem[]>([]);
+  const [categories, setCategories] = useState<CategoryItemType[]>([]);
   const [isDetailOpen, setDetailOpen] = useState(false);
   const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
   const [isCallConfirmOpen, setCallConfirmOpen] = useState(false);
   const [isCallOpen, setCallOpen] = useState(false);
   const [hasNewMessage, setHasNewMessage] = useState(false);
+
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const socketContext = useContext(SocketContext) as any;
   const NewUpdate = useMemo(
@@ -253,7 +256,7 @@ const LayoutDashboard = () => {
 
   return (
     <CartProvider>
-      <div className="h-full w-full overflow-y-auto">
+      <div className="h-full w-full overflow-y-auto ">
         {/* Left Sidebar  */}
         <DashboardLeftSidebar
           confirmToCall={confirmToCall}
@@ -261,10 +264,11 @@ const LayoutDashboard = () => {
           handleMessageClick={handleMessageClick}
           hasNewMessage={hasNewMessage}
           handleLogout={handleLogout}
+          setIsMobileMenuOpen={setIsMobileMenuOpen}
         />
         {/* Header */}
         <header className="bg-background fixed right-0 top-0 left-0 me-[30%] h-24 flex items-center justify-between px-8 gap-x-16 z-10">
-          <div>
+          <div className="hidden sm:block">
             <Logo />
           </div>
           <div className="flex-1">
@@ -281,12 +285,16 @@ const LayoutDashboard = () => {
               Table No
             </h6>
           </div>
+          <OutletSheet
+            open={isMobileMenuOpen}
+            onOpenChange={setIsMobileMenuOpen}
+          />
         </header>
         {/* Food item content */}
-        <main className="flex flex-row mt-28">
+        <main className="flex flex-row mt-28 ">
           <div className="basis-[10%]">{/* VOID */}</div>
           {/* Main Content section */}
-          <div className="basis-[60%] flex flex-col overflow-x-hidden">
+          <div className="basis-[90%] lg:basis-[60%] flex flex-col overflow-x-hidden">
             <h2 className="text-xl font-medium text-icon-active text-start">
               Choose Category
             </h2>
@@ -322,17 +330,18 @@ const LayoutDashboard = () => {
             </h2>
 
             {/* Food Items */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5 me-4 py-4">
+            <div className="grid grid-cols-1  md:grid-cols-3 xl:grid-cols-4 gap-5 me-4 py-4">
               {items?.map((item) => (
                 <FoodItems item={item} showFood={showFood} />
               ))}
             </div>
           </div>
         </main>
-        <div className="fixed top-0 right-0 w-[30%] h-full rounded-l-xl bg-sidebar shadow-md p-4 z-20">
+        <div className="fixed top-0 right-0 w-[30%] h-full rounded-l-xl bg-sidebar shadow-md p-4 z-20 hidden lg:block">
           <Outlet />
         </div>
       </div>
+
       {/* Detail modal */}
       <ModalFoodDetail
         isOpen={isDetailOpen}

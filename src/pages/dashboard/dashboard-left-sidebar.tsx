@@ -15,6 +15,7 @@ type Props = {
   handleMessageClick: () => void;
   hasNewMessage: boolean;
   handleLogout: () => void;
+  setIsMobileMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const DashboardLeftSidebar = ({
@@ -23,6 +24,7 @@ export const DashboardLeftSidebar = ({
   handleMessageClick,
   hasNewMessage,
   handleLogout,
+  setIsMobileMenuOpen,
 }: Props) => {
   return (
     <nav className="fixed top-1/2 transform -translate-y-1/2 left-0 w-22 bg-sidebar rounded-r-xl shadow-lg flex flex-col items-center justify-center gap-y-4 py-4 text-xs font-light">
@@ -85,7 +87,10 @@ export const DashboardLeftSidebar = ({
             "bg-icon-active-bg rounded-full": isActive,
           })
         }
-        onClick={handleMessageClick} // Handle click to remove the green dot
+        onClick={() => {
+          setIsMobileMenuOpen(true);
+          handleMessageClick();
+        }}
       >
         {({ isActive }) => (
           <>
@@ -110,6 +115,9 @@ export const DashboardLeftSidebar = ({
       </NavLink>
       {/* Cart */}
       <NavLink
+        onClick={() => {
+          setIsMobileMenuOpen(true);
+        }}
         to="/dashboard/cart"
         className={({ isActive }) =>
           cn("w-16 h-16 flex flex-col items-center justify-center", {
@@ -136,6 +144,9 @@ export const DashboardLeftSidebar = ({
       </NavLink>
       {/* Orders */}
       <NavLink
+        onClick={() => {
+          setIsMobileMenuOpen(true);
+        }}
         to="/dashboard/orders"
         className={cn("w-16 h-16 flex flex-col items-center justify-center", {
           "bg-icon-active-bg rounded-full": false,

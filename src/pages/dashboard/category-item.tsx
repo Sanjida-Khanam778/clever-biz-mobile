@@ -1,6 +1,6 @@
 import { cn } from "clsx-for-tailwind";
 
-export type CategoryItem = {
+export type CategoryItemType = {
   id: number;
   Category_name: string;
   slug: string;
@@ -8,7 +8,7 @@ export type CategoryItem = {
 };
 
 type Props = {
-  cat: CategoryItem;
+  cat: CategoryItemType;
   i: number;
   selectedCategory: number | null;
   setSelectedCategory: (ind: number) => void;
