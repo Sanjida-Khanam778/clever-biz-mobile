@@ -162,9 +162,9 @@ function MessagingUI() {
           </div>
         </div>
         <div className="ml-auto">
-          <button className="h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">
+          {/* <button className="h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">
             <Phone size={20} />
-          </button>
+          </button> */}
         </div>
       </div>
 
