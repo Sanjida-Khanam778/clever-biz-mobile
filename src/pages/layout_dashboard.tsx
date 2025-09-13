@@ -1,18 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { cn } from "clsx-for-tailwind";
-import { UtensilsCrossed } from "lucide-react";
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
-import { Outlet, useNavigate } from "react-router";
-import CallerModal from "../components/CallerModal";
+import CallerModal from "@/components/CallerModal";
 import {
   ModalCall,
   ModalCallConfirm,
   ModalFoodDetail,
-} from "../components/dialog";
-import { Logo } from "../components/icons";
-import { SearchBox } from "../components/input";
-import { SocketContext } from "../components/SocketContext";
-import { useWebSocket } from "../components/WebSocketContext";
+} from "@/components/dialog";
+import { Logo } from "@/components/icons";
+import { SearchBox } from "@/components/input";
+import { SocketContext } from "@/components/SocketContext";
+import { useWebSocket } from "@/components/WebSocketContext";
+import { cn } from "clsx-for-tailwind";
+import { UtensilsCrossed } from "lucide-react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { Outlet, useNavigate } from "react-router";
 import { CartProvider } from "../context/CartContext";
 import axiosInstance from "../lib/axios";
 import { CategoryItem } from "./dashboard/category-item";

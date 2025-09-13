@@ -5,10 +5,12 @@
     { "path": "./tsconfig.node.json" }
   ],
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "types": [
-      "vite-plugin-pwa/pwa-assets"
-    ]
+    "types": ["vite-plugin-pwa/pwa-assets"]
   }
 }
