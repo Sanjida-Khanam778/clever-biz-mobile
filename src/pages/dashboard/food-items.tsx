@@ -1,5 +1,5 @@
 import { cn } from "clsx-for-tailwind";
-export type FoodItem = {
+export type FoodItemTypes = {
   id: number;
   item_name: string;
   price: string;
@@ -15,7 +15,7 @@ export type FoodItem = {
 };
 
 type Props = {
-  item: FoodItem;
+  item: FoodItemTypes;
   showFood: (id: number) => void;
 };
 
@@ -24,14 +24,14 @@ export const FoodItems = ({ item, showFood }: Props) => {
     <div
       onClick={() => showFood(item.id)}
       className={cn(
-        "aspect-[1/1.2] bg-sidebar flex flex-col gap-y-2 items-stretch justify-center rounded-lg shadow-sm p-4 select-none cursor-pointer"
+        "aspect-video md:aspect-[1/1.2] bg-sidebar flex flex-col gap-y-2 items-stretch justify-center rounded-lg shadow-sm p-4 select-none cursor-pointer"
       )}
     >
-      <div className="aspect-square rounded-xl overflow-hidden flex justify-center items-center object-contain">
+      <div className="aspect-video md:aspect-square rounded-xl overflow-hidden flex justify-center items-center object-contain">
         <img
           src={item.image1}
           alt={item.item_name}
-          className="object-cover w-full h-full"
+          className="object-cover w-full  h-full "
         />
       </div>
       <p className="text-icon-active/80 text-wrap font-medium">

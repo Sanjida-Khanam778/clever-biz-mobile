@@ -17,7 +17,7 @@ import { CartProvider } from "../context/CartContext";
 import axiosInstance from "../lib/axios";
 import { type CategoryItemType, CategoryItem } from "./dashboard/category-item";
 import { DashboardLeftSidebar } from "./dashboard/dashboard-left-sidebar";
-import { FoodItem, FoodItems } from "./dashboard/food-items";
+import { FoodItemTypes, FoodItems } from "./dashboard/food-items";
 import { OutletSheet } from "./dashboard/outlet-sheet";
 
 const LayoutDashboard = () => {
@@ -68,7 +68,7 @@ const LayoutDashboard = () => {
     setNewMessageFlag(false); // Update the global WebSocket context as well
   };
 
-  const [items, setItems] = useState<FoodItem[]>([]);
+  const [items, setItems] = useState<FoodItemTypes[]>([]);
   const [search, setSearch] = useState("");
   const searchTimeout = useRef<any>(null);
   const [tableName, setTableName] = useState("");
