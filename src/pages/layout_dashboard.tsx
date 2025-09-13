@@ -10,7 +10,7 @@ import {
   Logo,
 } from "../components/icons";
 import { cn } from "clsx-for-tailwind";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import { SearchBox } from "../components/input";
 import {
   ModalCall,
@@ -22,6 +22,9 @@ import { CartProvider } from "../context/CartContext";
 import { UtensilsCrossed } from "lucide-react";
 import CallerModal from "../components/CallerModal";
 import { useWebSocket } from "../components/WebSocketContext";
+import { SocketContext } from "../components/SocketContext";
+import { useMemo } from "react";
+
 
 const LayoutDashboard = () => {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
@@ -37,6 +40,11 @@ const LayoutDashboard = () => {
   const [isCallConfirmOpen, setCallConfirmOpen] = useState(false);
   const [isCallOpen, setCallOpen] = useState(false);
   const [hasNewMessage, setHasNewMessage] = useState(false);
+
+  const socketContext = useContext(SocketContext) as any;
+  const NewUpdate = useMemo(() => socketContext?.response ?? {}, [socketContext?.response]);
+
+
 
   // Access WebSocket context to use setNewMessageFlag
   const { setNewMessageFlag } = useWebSocket();
@@ -87,39 +95,50 @@ const LayoutDashboard = () => {
   const searchTimeout = useRef<any>(null);
   const [tableName, setTableName] = useState("");
 
+  const fetchCategories = async () => {
+    try {
+      const response = await axiosInstance.get("/customer/categories/");
+      setCategories(response.data.results || []);
+    } catch (error) {
+      console.error("Failed to fetch categories", error);
+    }
+  };
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await axiosInstance.get("/customer/categories/");
-        setCategories(response.data.results || []);
-      } catch (error) {
-        console.error("Failed to fetch categories", error);
-      }
-    };
+    
+    
+    if (NewUpdate.type === "category_created" || NewUpdate.type === "category_updated" || NewUpdate.type === "category_deleted") {
+      fetchCategories();
+    }
     fetchCategories();
-  }, []);
+  }, [NewUpdate]);
 
-  useEffect(() => {
-    const fetchItems = async () => {
-      try {
-        let url = "/customer/items/";
-        const params = [];
-        if (selectedCategory !== null && categories[selectedCategory]) {
-          params.push(`category=${categories[selectedCategory].id}`);
-        }
-        if (search) {
-          params.push(`search=${encodeURIComponent(search)}`);
-        }
-        if (params.length > 0) {
-          url += `?${params.join("&")}`;
-        }
-        const response = await axiosInstance.get(url);
-        setItems(response.data.results || []);
-      } catch (error) {
-        console.error("Failed to fetch items", error);
+  const fetchItems = async () => {
+    try {
+      let url = "/customer/items/";
+      const params = [];
+      if (selectedCategory !== null && categories[selectedCategory]) {
+        params.push(`category=${categories[selectedCategory].id}`);
       }
-    };
+      if (search) {
+        params.push(`search=${encodeURIComponent(search)}`);
+      }
+      if (params.length > 0) {
+        url += `?${params.join("&")}`;
+      }
+      const response = await axiosInstance.get(url);
+      setItems(response.data.results || []);
+    } catch (error) {
+      console.error("Failed to fetch items", error);
+    }
+  };
+  useEffect(() => {
     fetchItems();
+
+
+if (NewUpdate.type === "item_created" || NewUpdate.type === "item_updated" || NewUpdate.type === "item_deleted") {
+      fetchItems();
+}
+
     // Debounced search effect
     if (searchTimeout.current) clearTimeout(searchTimeout.current);
     searchTimeout.current = setTimeout(() => {
@@ -128,7 +147,7 @@ const LayoutDashboard = () => {
     return () => {
       if (searchTimeout.current) clearTimeout(searchTimeout.current);
     };
-  }, [search, selectedCategory, categories]);
+  }, [search, selectedCategory, categories, NewUpdate]);
 
   useEffect(() => {
     // Log userInfo from localStorage
@@ -177,6 +196,7 @@ const LayoutDashboard = () => {
     newSoket.onmessage = (event) => {
       const data = JSON.parse(event.data);
       setResponse(data);
+      console.log(data);
       if (data.action === "incoming_call") {
         setIsCallingModal(true);
       }
@@ -191,6 +211,16 @@ const LayoutDashboard = () => {
         )}&deviceId=${encodeURIComponent("A1")}&receiver=${encodeURIComponent(
           "Hyatt Benjamin"
         )}&token=${encodeURIComponent(jwt)}`;
+      }
+      if (data.action === "call_accepted") {
+            setTimeout(() =>{
+             const data = {
+                    action: "end_call",
+                    call_id: response?.call_id,
+                    device_id: response?.device_id,
+                  };
+                  newSoket.send(JSON.stringify(data));
+        }, 5000);
       }
     };
 
@@ -238,6 +268,7 @@ const LayoutDashboard = () => {
         : undefined,
     };
     newsocket!.send(JSON.stringify(data));
+    setIsCallingModal(true);
   };
 
   return (
