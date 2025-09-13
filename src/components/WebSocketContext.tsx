@@ -36,7 +36,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
     const accessToken = localStorage.getItem("accessToken");
     const userInfo = localStorage.getItem("userInfo");
     const device_id = userInfo
-      ? JSON.parse(userInfo).user.restaurants[0].device_id
+      ? JSON.parse(userInfo).user?.restaurants[0].device_id
       : null;
 
     if (!device_id || !accessToken) return;

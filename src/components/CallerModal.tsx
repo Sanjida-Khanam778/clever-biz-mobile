@@ -1,7 +1,6 @@
 import { Phone, PhoneOff } from "lucide-react";
-import ringning from "../assets/ringing.mp3";
-import calling from "../assets/calling.mp3";
-
+import calling from "../assets/Audio/calling.mp3";
+import ringning from "../assets/Audio/ringing.mp3";
 
 type CallerModalProps = {
   handleAnswerCall: (callId: string, deviceId: string) => void;
@@ -10,7 +9,8 @@ type CallerModalProps = {
     from: string;
     call_id: string;
     device_id: string;
-    action?: string; // add other fields if needed
+    action: string;
+    [key: string]: any;
   };
   email: string;
 };
@@ -21,7 +21,7 @@ export default function CallerModal({
   response,
   email,
 }: CallerModalProps) {
-  console.log(email, response.from);
+  console.log("CallerModal response:", response);
   return (
     <div className="fixed inset-0 bg-transparent flex items-center justify-center z-50">
       <div className="bg-slate-800 rounded-3xl p-8 w-80 text-center text-white shadow-2xl">
@@ -42,7 +42,7 @@ export default function CallerModal({
         {/* Call Controls */}
         <div className="flex justify-center space-x-12">
           {/* Answer/Accept Call Button */}
-          {response.from !== email && (
+          {response?.from !== email && (
             <button
               onClick={() =>
                 handleAnswerCall(response.call_id, response.device_id)
@@ -53,7 +53,7 @@ export default function CallerModal({
             </button>
           )}
 
-          {response.from === email && response?.action === "incoming_call" && (
+          {response?.from === email && response.action === "incoming_call" && (
             <audio src={ringning} autoPlay loop className="opacity-0"></audio>
           )}
           {response?.action === "incoming_call" && (
