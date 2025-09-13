@@ -29,7 +29,6 @@ const ScreenOrders = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
-  
   const accessToken = localStorage.getItem("accessToken");
   const userInfo = localStorage.getItem("userInfo");
   const device_id = userInfo
@@ -62,28 +61,29 @@ const ScreenOrders = () => {
     };
     fetchOrders();
 
-     if (!accessToken) {
-    return
-  }
-  const newSoket = new WebSocket(`wss://abc.winaclaim.com/ws/order/${device_id}/?token=${accessToken}`)
-
-
-  newSoket.onopen = () => {
-    console.log("WebSocket connection established");
+    if (!accessToken) {
+      return;
     }
+    const newSoket = new WebSocket(
+      `wss://abc.winaclaim.com/ws/order/${device_id}/?token=${accessToken}`
+    );
 
-  newSoket.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-    console.log("Received message:", data);
-    fetchOrders();
-  }
-  newSoket.onclose = () => {
-    console.log("WebSocket connection closed");
-  }
+    newSoket.onopen = () => {
+      console.log("WebSocket connection established");
+    };
 
-  return () => {
-    newSoket.close();
-  }
+    newSoket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      console.log("Received message:", data);
+      fetchOrders();
+    };
+    newSoket.onclose = () => {
+      console.log("WebSocket connection closed");
+    };
+
+    return () => {
+      newSoket.close();
+    };
   }, [device_id, accessToken]);
 
   return (
@@ -109,7 +109,7 @@ const ScreenOrders = () => {
   );
 };
 
-const OrderRow = ({ order }: { order: Order}) => {
+const OrderRow = ({ order }: { order: Order }) => {
   // Support both order_items and items
   const items: OrderItem[] = order.order_items ?? order.items ?? [];
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -131,8 +131,6 @@ const OrderRow = ({ order }: { order: Order}) => {
     }
     return v ?? "—";
   };
-
-
 
   return (
     <>
@@ -242,33 +240,20 @@ const ProgressBar = ({ status }: ProgressBarProps) => {
     "connecting" | "connected" | "disconnected" | "error"
   >("disconnected");
 
-
-
-  const statusOrder = [
-    "pending",
-    "accepted",
-    "preparing",
-    "prepared",
-    "served",
-    // "completed",
-  ];
-
+  const statusOrder = ["pending", "preparing", "served"]; // Only these three statuses
   const steps = [
-    { key: "accepted", label: "Accepted" },
+    { key: "pending", label: "Pending" },
     { key: "preparing", label: "Preparing" },
     { key: "served", label: "Served" },
   ];
 
+  const currentIndex = Math.max(0, statusOrder.indexOf(currentStatus)); // Find the index of the current status
+  const progressPercentage = (currentIndex / (statusOrder.length - 1)) * 100; // Calculate the progress percentage
 
-  const currentIndex = Math.max(0, statusOrder.indexOf(currentStatus));
-  const progressPercentage = (currentIndex / (statusOrder?.length - 1)) * 100;
-
+  // Debugging: log current status and progress
   console.log("Current Status:", currentStatus);
   console.log("Current Index:", currentIndex);
   console.log("Progress Percentage:", progressPercentage);
-
-// Add dependencies to prevent stale closures
-
 
   if (currentIndex === -1) {
     console.warn(`Status "${currentStatus}" not found in statusOrder array`);
@@ -313,7 +298,7 @@ const ProgressBar = ({ status }: ProgressBarProps) => {
 
       {/* Milestone Steps */}
       <div className="flex justify-between relative">
-        {steps.map((step, idx) => {
+        {steps.map((step) => {
           const stepIndex = statusOrder.indexOf(step.key);
           const isCompleted = stepIndex !== -1 && stepIndex <= currentIndex;
 
@@ -326,7 +311,7 @@ const ProgressBar = ({ status }: ProgressBarProps) => {
                     : "bg-gray-200 text-gray-400"
                 }`}
               >
-                {isCompleted ? "✓" : idx + 1}
+                {isCompleted ? "✓" : "•"}
               </div>
               <span
                 className={`mt-2 text-[11px] sm:text-xs font-medium text-center max-w-[60px] ${
@@ -358,4 +343,5 @@ const ProgressBar = ({ status }: ProgressBarProps) => {
     </div>
   );
 };
+
 export default ScreenOrders;
