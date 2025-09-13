@@ -15,17 +15,14 @@ import { SocketContext } from "../components/SocketContext";
 import { useWebSocket } from "../components/WebSocketContext";
 import { CartProvider } from "../context/CartContext";
 import axiosInstance from "../lib/axios";
+import { CategoryItem } from "./dashboard/category-item";
 import { DashboardLeftSidebar } from "./dashboard/dashboard-left-sidebar";
+import { FoodItem, FoodItems } from "./dashboard/food-items";
 
 const LayoutDashboard = () => {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
-  type Category = {
-    id: number;
-    Category_name: string;
-    slug: string;
-    image: string;
-  };
-  const [categories, setCategories] = useState<Category[]>([]);
+
+  const [categories, setCategories] = useState<CategoryItem[]>([]);
   const [isDetailOpen, setDetailOpen] = useState(false);
   const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
   const [isCallConfirmOpen, setCallConfirmOpen] = useState(false);
@@ -68,21 +65,7 @@ const LayoutDashboard = () => {
     setNewMessageFlag(false); // Update the global WebSocket context as well
   };
 
-  type Item = {
-    id: number;
-    item_name: string;
-    price: string;
-    description: string;
-    slug: string;
-    category: number;
-    restaurant: number;
-    category_name: string;
-    image1: string;
-    availability: boolean;
-    video: string;
-    restaurant_name: string;
-  };
-  const [items, setItems] = useState<Item[]>([]);
+  const [items, setItems] = useState<FoodItem[]>([]);
   const [search, setSearch] = useState("");
   const searchTimeout = useRef<any>(null);
   const [tableName, setTableName] = useState("");
@@ -326,28 +309,12 @@ const LayoutDashboard = () => {
                 <p className="text-primary font-medium">All Category</p>
               </div>
               {categories?.map((cat, i) => (
-                <div
-                  key={cat.id}
-                  onClick={() => setSelectedCategory(i)}
-                  className={cn(
-                    "flex-shrink-0 h-40 w-38 bg-sidebar flex flex-col gap-y-4 items-center justify-center rounded-lg shadow-sm py-4 last:mr-4 select-none cursor-pointer",
-                    {
-                      "bg-[#F1F5FF] border border-[#ABC1FF]":
-                        selectedCategory === i,
-                    }
-                  )}
-                >
-                  <div className="h-16 w-16 rounded-xl overflow-hidden">
-                    <img
-                      src={cat.image}
-                      alt={cat.Category_name}
-                      className="object-cover w-full h-full"
-                    />
-                  </div>
-                  <p className="text-primary font-medium">
-                    {cat.Category_name}
-                  </p>
-                </div>
+                <CategoryItem
+                  cat={cat}
+                  i={i}
+                  selectedCategory={selectedCategory}
+                  setSelectedCategory={setSelectedCategory}
+                />
               ))}
             </div>
             <h2 className="text-xl font-medium text-icon-active text-start mt-4">
@@ -357,30 +324,7 @@ const LayoutDashboard = () => {
             {/* Food Items */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5 me-4 py-4">
               {items?.map((item) => (
-                <div
-                  key={item.id}
-                  onClick={() => showFood(item.id)}
-                  className={cn(
-                    "aspect-[1/1.2] bg-sidebar flex flex-col gap-y-2 items-stretch justify-center rounded-lg shadow-sm p-4 select-none cursor-pointer"
-                  )}
-                >
-                  <div className="aspect-square rounded-xl overflow-hidden flex justify-center items-center object-contain">
-                    <img
-                      src={item.image1}
-                      alt={item.item_name}
-                      className="object-cover w-full h-full"
-                    />
-                  </div>
-                  <p className="text-icon-active/80 text-wrap font-medium">
-                    {item.item_name}
-                  </p>
-                  <p className="text-icon-active text-wrap text-start font-bold text-2xl">
-                    {`$${item.price}`}
-                    <span className="text-sm font-normal">
-                      / {item.category_name}
-                    </span>
-                  </p>
-                </div>
+                <FoodItems item={item} showFood={showFood} />
               ))}
             </div>
           </div>
