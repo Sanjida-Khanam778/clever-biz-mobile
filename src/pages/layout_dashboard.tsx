@@ -5,7 +5,7 @@ import {
   ModalCallConfirm,
   ModalFoodDetail,
 } from "@/components/dialog";
-import { Logo } from "@/components/icons";
+import { Logo } from "@/components/icons/logo";
 import { SearchBox } from "@/components/input";
 import { SocketContext } from "@/components/SocketContext";
 import { useWebSocket } from "@/components/WebSocketContext";
@@ -22,6 +22,7 @@ import { OutletSheet } from "./dashboard/outlet-sheet";
 
 const LayoutDashboard = () => {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const [categories, setCategories] = useState<CategoryItemType[]>([]);
   const [isDetailOpen, setDetailOpen] = useState(false);
@@ -29,8 +30,6 @@ const LayoutDashboard = () => {
   const [isCallConfirmOpen, setCallConfirmOpen] = useState(false);
   const [isCallOpen, setCallOpen] = useState(false);
   const [hasNewMessage, setHasNewMessage] = useState(false);
-
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const socketContext = useContext(SocketContext) as any;
   const NewUpdate = useMemo(
@@ -76,7 +75,7 @@ const LayoutDashboard = () => {
   const fetchCategories = async () => {
     try {
       const response = await axiosInstance.get("/customer/categories/");
-      setCategories(response.data.results || []);
+      setCategories(response.data || []);
     } catch (error) {
       console.error("Failed to fetch categories", error);
     }
