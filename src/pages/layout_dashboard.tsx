@@ -5,7 +5,7 @@ import {
   ModalCallConfirm,
   ModalFoodDetail,
 } from "@/components/dialog";
-import { Logo } from "@/components/icons";
+import { Logo } from "@/components/icons/logo";
 import { SearchBox } from "@/components/input";
 import { SocketContext } from "@/components/SocketContext";
 import { useWebSocket } from "@/components/WebSocketContext";

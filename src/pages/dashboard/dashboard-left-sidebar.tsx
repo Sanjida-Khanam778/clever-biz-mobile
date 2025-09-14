@@ -8,7 +8,7 @@ import {
   IconLogout,
   IconMessage,
   IconOrders,
-} from "../../components/icons";
+} from "../../components/icons/logo";
 
 type Props = {
   confirmToCall: (receiver_id: any) => void;
