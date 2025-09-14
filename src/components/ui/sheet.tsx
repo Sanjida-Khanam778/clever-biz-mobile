@@ -315,7 +315,7 @@ const SheetClose: React.FC<SheetCloseProps> = ({
     return React.cloneElement(children as React.ReactElement<any>, {
       onClick: handleClick,
       className: `${
-        (children.props as unknown).className || ""
+        (children.props as any).className || ""
       } ${className}`.trim(),
     });
   }
@@ -337,6 +337,5 @@ export {
   SheetOverlay,
   SheetPortal,
   SheetTitle,
-  SheetTrigger
+  SheetTrigger,
 };
-
