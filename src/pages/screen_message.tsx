@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { FormEvent, useState, useEffect, useRef } from "react";
-import { Send, Phone } from "lucide-react";
+import { Send } from "lucide-react";
 import axiosInstance from "../lib/axios";
 import toast from "react-hot-toast";
 
