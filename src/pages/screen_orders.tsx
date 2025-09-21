@@ -134,41 +134,57 @@ const OrderRow = ({ order }: { order: Order }) => {
 
   return (
     <>
-      <div className="flex flex-col bg-white rounded-xl shadow-sm mb-8 border border-gray-100 overflow-hidden min-h-88">
+      <style>{`
+        .custom-scroll::-webkit-scrollbar {
+          width: 8px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+          background: white; /* white track */
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+          background: white; /* white thumb */
+          border-radius: 8px;
+          border: 1px solid #ccc; /* optional: gives outline so it's visible */
+        }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+          background: #f0f0f0; /* light gray on hover */
+        }
+      `}</style>
+      <div className="flex flex-col bg-white rounded-xl shadow-sm mb-8 border border-gray-100  min-h-96 overflow-auto custom-scroll">
         {/* Main Content Container */}
         <div className="p-3 sm:p-4 md:p-6">
-          <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
-            {/* Left Section: Image and Item Info */}
-            <div className="flex gap-3 sm:gap-4 flex-1">
-              {/* Food Image */}
-              <div className="flex-shrink-0">
+          <div className="flex-row lg:flex-row gap-4 lg:gap-6">
+            <div className="flex flex-col md:flex-row gap-3 sm:gap-4 flex-1">
+              {/* Image */}
+              <div className="flex-shrink-0 flex justify-center items-center md:justify-start">
                 <img
                   src={veg}
                   alt="Food"
-                  className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 object-cover rounded-lg shadow-sm"
+                  className="w-14 h-14 sm:w-16 sm:h-16 md:w-16 md:h-16 object-cover rounded-lg shadow-sm"
                 />
               </div>
 
-              {/* Order Details */}
-              <div className="flex-1 min-w-0 md:flex-row">
-                {" "}
-                {/* min-w-0 prevents text overflow */}
+              {/* Details */}
+              <div className="flex-1 min-w-0 flex flex-col justify-between">
+                {/* Title */}
                 <h2 className="font-semibold text-gray-900 text-base sm:text-lg md:text-xl truncate">
                   {items[0]?.item_name || `Order #${order.id}`}
                 </h2>
+
                 {/* Price and Date Row */}
-                <div className="flex flex-col xs:flex-row xs:items-center xs:justify-between gap-1 xs:gap-2 mt-1">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2 mt-1">
                   <p className="text-gray-700 font-medium text-sm sm:text-base">
                     Total: {formatMoney(order.total_price)}
                   </p>
-                  <p className="text-xs sm:text-sm text-gray-500 xs:text-right">
+                  <p className="text-xs sm:text-sm text-gray-500 sm:text-right">
                     {new Date(order.created_time).toLocaleString()}
                   </p>
                 </div>
+
                 {/* Items List */}
                 {items.length > 0 ? (
                   <div className="mt-3 space-y-1.5">
-                    <p className="text-xs sm:text-sm font-medium text-gray-600 mb-2">
+                    <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1">
                       Order Items:
                     </p>
                     <ul className="space-y-1">
@@ -197,14 +213,17 @@ const OrderRow = ({ order }: { order: Order }) => {
             </div>
 
             {/* Right Section: Action Buttons */}
-            <div className="flex flex-row lg:flex-col gap-2 sm:gap-3 lg:w-auto lg:min-w-[140px] lg:justify-start">
-              <div className="flex-1 lg:flex-none">
+            <div className="flex  gap-4 mt-3">
+              {/* Checkout Button */}
+              <div className="w-full md:w-2/3 mx-auto">
                 <CheckoutButton orderId={order.id} />
               </div>
-              <div className="flex-1 lg:flex-none">
+
+              {/* Review Button */}
+              <div className="w-full md:w-2/3 mx-auto">
                 <button
                   onClick={handleReview}
-                  className="w-full px-4 py-2 rounded-md bg-sky-500 text-white hover:bg-green-700 disabled:opacity-60"
+                  className="w-full px-4 py-2 rounded-md bg-sky-500 text-white hover:bg-green-700 disabled:opacity-60 transition-colors duration-300 ease-in-out"
                   aria-label="Write a review for this order"
                 >
                   Review
@@ -261,7 +280,7 @@ const ProgressBar = ({ status }: ProgressBarProps) => {
 
   return (
     <div className="w-full">
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center justify-between mb-1">
         <span className="text-sm font-semibold text-gray-800">
           Order Progress
         </span>
