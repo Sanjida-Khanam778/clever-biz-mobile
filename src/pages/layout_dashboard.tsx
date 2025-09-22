@@ -220,7 +220,7 @@ const LayoutDashboard = () => {
       newSoket.close();
     };
   }, [jwt, userInfo]);
-console.log(items)
+  console.log(items);
   const handleEndCall = (callerId: string, deviceId: string) => {
     const data = {
       action: "end_call",
@@ -255,16 +255,16 @@ console.log(items)
 
   return (
     <CartProvider>
+      <DashboardLeftSidebar
+        confirmToCall={confirmToCall}
+        userInfo={userInfo}
+        handleMessageClick={handleMessageClick}
+        hasNewMessage={hasNewMessage}
+        handleLogout={handleLogout}
+        setIsMobileMenuOpen={setIsMobileMenuOpen}
+      />
       <div className="h-full w-full overflow-y-auto ">
         {/* Left Sidebar  */}
-        <DashboardLeftSidebar
-          confirmToCall={confirmToCall}
-          userInfo={userInfo}
-          handleMessageClick={handleMessageClick}
-          hasNewMessage={hasNewMessage}
-          handleLogout={handleLogout}
-          setIsMobileMenuOpen={setIsMobileMenuOpen}
-        />
         {/* Header */}
         <header className="bg-background fixed right-0 top-0 left-0 me-[30%] h-24 flex items-center justify-between px-8 gap-x-16 z-10">
           <div className="hidden sm:block">
@@ -328,7 +328,6 @@ console.log(items)
               Choose Your Items
             </h2>
 
-            
             <div className="grid grid-cols-1  md:grid-cols-3 xl:grid-cols-4 gap-5 me-4 py-4">
               {items?.map((item) => (
                 <FoodItems item={item} showFood={showFood} />

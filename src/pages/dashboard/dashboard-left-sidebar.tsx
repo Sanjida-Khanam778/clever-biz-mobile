@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { useMediaQuery } from "@uidotdev/usehooks";
 import { cn } from "clsx-for-tailwind";
 import { NavLink } from "react-router";
@@ -30,7 +32,14 @@ export const DashboardLeftSidebar = ({
   const isLargeDevice = useMediaQuery("only screen and (min-width : 993px)");
 
   return (
-    <nav className="fixed top-1/2 transform -translate-y-1/2 left-0 w-22 bg-sidebar rounded-r-xl shadow-lg flex flex-col items-center justify-center gap-y-4 py-4 text-xs font-light">
+    <nav
+      className={cn(
+        " fixed bg-sidebar rounded-r-xl shadow-lg flex flex-col items-center justify-center gap-y-4 py-4 text-xs font-light",
+        isLargeDevice
+          ? " top-1/2 transform -translate-y-1/2 left-0 w-22"
+          : "fixed bottom-3 right-0 left-0  w-fit    mx-auto rounded-xl   py-2 px-4 flex gap-2 flex-row h-fit transform-none"
+      )}
+    >
       {/* Home */}
       <NavLink
         to="/dashboard"
