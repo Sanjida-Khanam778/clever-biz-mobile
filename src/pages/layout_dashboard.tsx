@@ -220,7 +220,7 @@ const LayoutDashboard = () => {
       newSoket.close();
     };
   }, [jwt, userInfo]);
-
+console.log(items)
   const handleEndCall = (callerId: string, deviceId: string) => {
     const data = {
       action: "end_call",
@@ -328,7 +328,7 @@ const LayoutDashboard = () => {
               Choose Your Items
             </h2>
 
-            {/* Food Items */}
+            
             <div className="grid grid-cols-1  md:grid-cols-3 xl:grid-cols-4 gap-5 me-4 py-4">
               {items?.map((item) => (
                 <FoodItems item={item} showFood={showFood} />

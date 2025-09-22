@@ -22,7 +22,7 @@ const ScreenCart = () => {
       }
 
       const userData = JSON.parse(userInfo);
-      const restaurant = userData.user.restaurants[0].id
+      const restaurant = userData.user.restaurants[0].id;
       const device = userData.user.restaurants[0].device_id;
 
       const orderItems = cart.map((item) => ({
@@ -35,7 +35,7 @@ const ScreenCart = () => {
         device,
         order_items: orderItems,
       };
-      console.log(orderData)
+      console.log(orderData);
 
       await axiosInstance.post("/customer/orders/", orderData);
       toast.success("Order placed successfully!");
@@ -104,19 +104,23 @@ const ScreenCart = () => {
       </div>
       <div className="w-full text-primary/60 mt-4">
         <div className="w-full h-full flex flex-col gap-y-2 rounded-lg shadow-md bg-[#F6F9FF] p-4 text-primary">
-          <p className="text-primary/60 mt-4 text-sm font-medium text-center">
-            Total Quantity:
-            <span className="ms-1 border border-[#CFCFCF] px-2 py-1 rounded-md">
-              {totalQuantity}
-            </span>
-            <span className="ms-1">{"  "}</span>
-            Total Cost:
-            <span className="ms-1 border border-[#CFCFCF] px-2 py-1 rounded-md">
-              ${totalCost}
-            </span>
-          </p>
+          <div className="flex flex-wrap justify-center items-center gap-3 text-sm font-medium">
+            <div className="flex items-center gap-1">
+              <span>Total Quantity:</span>
+              <span className="border border-[#CFCFCF] px-2 py-1 rounded-md">
+                {totalQuantity}
+              </span>
+            </div>
+            <div className="flex items-center gap-1">
+              <span>Total Cost:</span>
+              <span className="border border-[#CFCFCF] px-2 py-1 rounded-md">
+                ${totalCost}
+              </span>
+            </div>
+          </div>
+
           <button
-            className="mt-4 button-primary"
+            className="mt-4 button-primary w-full"
             onClick={handleOrderNow}
             disabled={cart.length === 0}
           >
