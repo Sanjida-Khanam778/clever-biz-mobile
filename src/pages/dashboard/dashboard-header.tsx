@@ -1,6 +1,5 @@
 import { Logo } from "@/components/icons/logo";
 import { SearchBox } from "@/components/input";
-import { Menu } from "lucide-react";
 import { OutletSheet } from "./outlet-sheet";
 
 type Props = {
