@@ -151,7 +151,7 @@ const OrderRow = ({ order }: { order: Order }) => {
   }
 `}</style>
 
-      <div className="flex flex-col bg-white rounded-xl shadow-sm mb-8 border border-gray-100 custom-scroll min-h-96 overflow-auto">
+      <div className="flex flex-col bg-white rounded-xl shadow-sm mb-8 border border-gray-100  min-h-96 overflow-y-auto custom-scroll">
         {/* Main Content Container */}
         <div className="p-3 sm:p-4 md:p-6">
           <div className="flex-row custom-scroll lg:flex-row gap-4 lg:gap-6">
