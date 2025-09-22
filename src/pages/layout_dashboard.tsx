@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import CallerModal from "@/components/CallerModal";
 import {
@@ -5,8 +6,6 @@ import {
   ModalCallConfirm,
   ModalFoodDetail,
 } from "@/components/dialog";
-import { Logo } from "@/components/icons/logo";
-import { SearchBox } from "@/components/input";
 import { SocketContext } from "@/components/SocketContext";
 import { useWebSocket } from "@/components/WebSocketContext";
 import { cn } from "clsx-for-tailwind";
@@ -16,9 +15,9 @@ import { Outlet, useNavigate } from "react-router";
 import { CartProvider } from "../context/CartContext";
 import axiosInstance from "../lib/axios";
 import { type CategoryItemType, CategoryItem } from "./dashboard/category-item";
+import { DashboardHeader } from "./dashboard/dashboard-header";
 import { DashboardLeftSidebar } from "./dashboard/dashboard-left-sidebar";
 import { FoodItemTypes, FoodItems } from "./dashboard/food-items";
-import { OutletSheet } from "./dashboard/outlet-sheet";
 
 const LayoutDashboard = () => {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
@@ -266,29 +265,14 @@ const LayoutDashboard = () => {
       <div className="h-full w-full overflow-y-auto ">
         {/* Left Sidebar  */}
         {/* Header */}
-        <header className="bg-background fixed right-0 top-0 left-0 me-[30%] h-24 flex items-center justify-between px-8 gap-x-16 z-10">
-          <div className="hidden sm:block">
-            <Logo />
-          </div>
-          <div className="flex-1">
-            <SearchBox
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
-          <div className="flex flex-col items-center">
-            <div className="h-10 w-10 bg-accent/5 rounded-full flex justify-center items-center">
-              <h2 className="font-bold text-lg text-accent">{tableName}</h2>
-            </div>
-            <h6 className="text-xs uppercase font-medium text-icon-active">
-              Table No
-            </h6>
-          </div>
-          <OutletSheet
-            open={isMobileMenuOpen}
-            onOpenChange={setIsMobileMenuOpen}
-          />
-        </header>
+        <DashboardHeader
+          tableName={tableName}
+          isMobileMenuOpen={isMobileMenuOpen}
+          setIsMobileMenuOpen={setIsMobileMenuOpen}
+          search={search}
+          setSearch={setSearch}
+        />
+
         {/* Food item content */}
         <main className="flex flex-row mt-28 ">
           <div className="basis-[10%]">{/* VOID */}</div>

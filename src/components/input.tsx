@@ -1,13 +1,22 @@
+import { cn } from "clsx-for-tailwind";
+
 /* Search box */
 export const SearchBox = ({
   value,
   onChange,
+  className,
 }: {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  className?: string;
 }) => {
   return (
-    <div className="flex items-center w-full bg-white rounded-lg shadow-sm overflow-hidden">
+    <div
+      className={cn(
+        "flex items-center w-full bg-white rounded-lg shadow-sm overflow-hidden",
+        className
+      )}
+    >
       <input
         type="text"
         placeholder="Search Food items"
