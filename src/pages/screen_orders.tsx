@@ -135,32 +135,33 @@ const OrderRow = ({ order }: { order: Order }) => {
   return (
     <>
       <style>{`
-        .custom-scroll::-webkit-scrollbar {
-          width: 8px;
-        }
-        .custom-scroll::-webkit-scrollbar-track {
-          background: white; /* white track */
-        }
-        .custom-scroll::-webkit-scrollbar-thumb {
-          background: white; /* white thumb */
-          border-radius: 8px;
-          border: 1px solid #ccc; /* optional: gives outline so it's visible */
-        }
-        .custom-scroll::-webkit-scrollbar-thumb:hover {
-          background: #f0f0f0; /* light gray on hover */
-        }
-      `}</style>
-      <div className="flex flex-col bg-white rounded-xl shadow-sm mb-8 border border-gray-100  min-h-96 overflow-auto custom-scroll">
+  .custom-scroll::-webkit-scrollbar {
+    width: 8px; /* Increase width for better visibility */
+  }
+  .custom-scroll::-webkit-scrollbar-track {
+    background: #f0f0f0; /* Light gray background for the track */
+  }
+  .custom-scroll::-webkit-scrollbar-thumb {
+    background: #ffffff; /* White color for the thumb */
+    border-radius: 4px; /* Slightly rounded corners for the thumb */
+    border: 2px solid #e0e0e0; /* Light border to make the thumb visible */
+  }
+  .custom-scroll::-webkit-scrollbar-thumb:hover {
+    background: #e0e0e0; /* Lighter gray thumb on hover for visibility */
+  }
+`}</style>
+
+      <div className="flex flex-col bg-white rounded-xl shadow-sm mb-8 border border-gray-100 custom-scroll min-h-96 overflow-auto">
         {/* Main Content Container */}
         <div className="p-3 sm:p-4 md:p-6">
-          <div className="flex-row lg:flex-row gap-4 lg:gap-6">
-            <div className="flex flex-col md:flex-row gap-3 sm:gap-4 flex-1">
+          <div className="flex-row custom-scroll lg:flex-row gap-4 lg:gap-6">
+            <div className=" flex flex-col md:flex-row gap-3 sm:gap-4 flex-1">
               {/* Image */}
-              <div className="flex-shrink-0 flex justify-center items-center md:justify-start">
+              <div className="flex-shrink-0 flex justify-center items-center md:justify-center">
                 <img
                   src={veg}
                   alt="Food"
-                  className="w-14 h-14 sm:w-16 sm:h-16 md:w-16 md:h-16 object-cover rounded-lg shadow-sm"
+                  className="w-20 h-20 sm:w-29 sm:h-16 md:w-16 md:h-16 object-cover rounded-lg shadow-sm"
                 />
               </div>
 

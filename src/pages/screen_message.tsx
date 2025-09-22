@@ -226,7 +226,7 @@ function MessagingUI() {
           <input
             type="text"
             placeholder="Type here"
-            className="text-sm flex-1 p-2 bg-white border-gray-300 rounded-l-lg focus:outline-none"
+            className="text-sm flex-1 p-2 bg-white border rounded-l-lg focus:outline-none border-blue-200"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
           />

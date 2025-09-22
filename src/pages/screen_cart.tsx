@@ -102,25 +102,22 @@ const ScreenCart = () => {
           ))
         )}
       </div>
-      <div className="w-full text-primary/60 mt-4">
-        <div className="w-full h-full flex flex-col gap-y-2 rounded-lg shadow-md bg-[#F6F9FF] p-4 text-primary">
-          <div className="flex flex-wrap justify-center items-center gap-3 text-sm font-medium">
-            <div className="flex items-center gap-1">
-              <span>Total Quantity:</span>
-              <span className="border border-[#CFCFCF] px-2 py-1 rounded-md">
+      <div className="w-full mt-4">
+        <div className="w-full flex flex-col gap-2 rounded-lg shadow-md bg-[#F6F9FF] p-4 text-primary">
+          <div className="flex flex-wrap justify-center gap-3 text-sm font-medium">
+            <span>
+              Total Quantity:{" "}
+              <span className="border px-2 py-1 rounded-md">
                 {totalQuantity}
               </span>
-            </div>
-            <div className="flex items-center gap-1">
-              <span>Total Cost:</span>
-              <span className="border border-[#CFCFCF] px-2 py-1 rounded-md">
-                ${totalCost}
-              </span>
-            </div>
+            </span>
+            <span>
+              Total Cost:{" "}
+              <span className="border px-2 py-1 rounded-md">${totalCost}</span>
+            </span>
           </div>
-
           <button
-            className="mt-4 button-primary w-full"
+            className="button-primary w-full"
             onClick={handleOrderNow}
             disabled={cart.length === 0}
           >
