@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { cn } from "clsx-for-tailwind";
 import { Circle, Lock, type LucideIcon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { ImSpinner6 } from "react-icons/im";
 import { Link, useNavigate } from "react-router";
@@ -43,6 +43,14 @@ const ScreenLogin = () => {
   const [tableNo, setTableNo] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const isAuthenticated = localStorage.getItem("accessToken");
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    }
+  }, [isAuthenticated, navigate]);
+
   const handleLogin = async () => {
     setLoading(true);
     try {
