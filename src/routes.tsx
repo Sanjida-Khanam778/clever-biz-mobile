@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router";
-import { PrivateRouteGuard, PublicRouteGuard } from "./components/route-guard";
+
 import CancelPage from "./pages/CancelPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import LayoutDashboard from "./pages/layout_dashboard";
@@ -9,26 +9,14 @@ import ScreenLogin from "./pages/screen_login";
 import ScreenMessage from "./pages/screen_message";
 import ScreenOrders from "./pages/screen_orders";
 import SuccessPage from "./pages/SuccessPage";
+import { PrivateRouteGuard } from "./components/route-guard";
+import { NotFoundPage } from "./pages/not-found";
 
 function App() {
   return (
     <Routes>
-      <Route
-        path="/"
-        element={
-          <PublicRouteGuard>
-            <ScreenLogin />
-          </PublicRouteGuard>
-        }
-      />
-      <Route
-        path="/dashboard"
-        element={
-          <PrivateRouteGuard>
-            <LayoutDashboard />
-          </PrivateRouteGuard>
-        }
-      >
+      <Route path="/" element={<ScreenLogin />} />
+      <Route path="/dashboard" element={<LayoutDashboard />}>
         {/* <Route index={true} element={<ScreenLogin />} /> */}
         <Route index={true} element={<ScreenHome />} />
         <Route path="message" element={<ScreenMessage />} />
@@ -38,6 +26,8 @@ function App() {
         <Route path="success" element={<SuccessPage />} />
         <Route path="cancel" element={<CancelPage />} />
       </Route>
+
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }
