@@ -155,29 +155,25 @@ const OrderRow = ({ order }: { order: Order }) => {
         {/* Main Content Container */}
         <div className="p-3 sm:p-4 md:p-6">
           <div className="flex-row custom-scroll lg:flex-row gap-4 lg:gap-6">
-            <div className=" flex flex-col md:flex-row gap-3 sm:gap-4 flex-1">
+            <div className="flex flex-col xl:flex-row gap-3 sm:gap-4 flex-1">
               {/* Image */}
               <div className="flex-shrink-0 flex justify-center items-center md:justify-center">
                 <img
                   src={veg}
                   alt="Food"
-                  className="w-20 h-20 sm:w-29 sm:h-16 md:w-16 md:h-16 object-cover rounded-lg shadow-sm"
+                  className="w-20 h-20 sm:w-28 sm:h-16 md:w-16 md:h-16 object-cover rounded-lg shadow-sm"
                 />
               </div>
-
-              {/* Details */}
               <div className="flex-1 min-w-0 flex flex-col justify-between">
                 {/* Title */}
                 <h2 className="font-semibold text-gray-900 text-base sm:text-lg md:text-xl truncate">
                   {items[0]?.item_name || `Order #${order.id}`}
                 </h2>
-
-                {/* Price and Date Row */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2 mt-1">
                   <p className="text-gray-700 font-medium text-sm sm:text-base">
                     Total: {formatMoney(order.total_price)}
                   </p>
-                  <p className="text-xs sm:text-sm text-gray-500 sm:text-right">
+                  <p className="text-xs sm:text-[12px] text-gray-500 sm:text-right">
                     {new Date(order.created_time).toLocaleString()}
                   </p>
                 </div>
@@ -235,7 +231,7 @@ const OrderRow = ({ order }: { order: Order }) => {
         </div>
 
         {/* Progress Bar Section */}
-        <div className="border-t border-gray-100 bg-gray-50 px-3 py-4 sm:px-4 sm:py-5 md:px-6">
+        <div className="border-t border-gray-100 bg-gray-50 px-3 py-4 sm:px-4 sm:py-5 ">
           <ProgressBar status={order.status} />
         </div>
       </div>
