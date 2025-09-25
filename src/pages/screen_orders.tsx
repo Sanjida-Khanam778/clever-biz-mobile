@@ -123,7 +123,7 @@ const OrderRow = ({ order }: { order: Order }) => {
       try {
         return new Intl.NumberFormat(undefined, {
           style: "currency",
-          currency: "USD", // or use your currency
+          currency: "AED", // or use your currency
         }).format(n);
       } catch {
         return `$${n}`;
@@ -171,7 +171,7 @@ const OrderRow = ({ order }: { order: Order }) => {
                 </h2>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2 mt-1">
                   <p className="text-gray-700 font-medium text-sm sm:text-base">
-                    Total: {formatMoney(order.total_price)}
+                    Total: {order.total_price}
                   </p>
                   <p className="text-xs sm:text-[12px] text-gray-500 sm:text-right">
                     {new Date(order.created_time).toLocaleString()}

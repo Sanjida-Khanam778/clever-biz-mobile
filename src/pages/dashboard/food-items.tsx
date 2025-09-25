@@ -41,8 +41,8 @@ export const FoodItems = ({ item, showFood }: Props) => {
               <p className="text-icon-active/80 text-wrap font-medium">
                 {item.item_name}
               </p>
-              <p className="text-icon-active text-wrap text-start font-bold text-2xl">
-                {`$${item.price}`}
+              <p className="text-icon-active text-wrap text-start font-bold text-xl tr">
+                {`AED${item.price}`}
                 <span className="text-sm font-normal">
                   / {item.category_name}
                 </span>

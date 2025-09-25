@@ -42,7 +42,7 @@ export default function CheckoutButton({
         }
       }
 
-      // Checkout এ যাই
+
       if (url) {
         window.location.href = url;
         return;

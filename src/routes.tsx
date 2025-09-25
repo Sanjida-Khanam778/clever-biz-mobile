@@ -9,7 +9,7 @@ import ScreenLogin from "./pages/screen_login";
 import ScreenMessage from "./pages/screen_message";
 import ScreenOrders from "./pages/screen_orders";
 import SuccessPage from "./pages/SuccessPage";
-import { PrivateRouteGuard } from "./components/route-guard";
+// import { PrivateRouteGuard } from "./components/route-guard";
 import { NotFoundPage } from "./pages/not-found";
 
 function App() {
