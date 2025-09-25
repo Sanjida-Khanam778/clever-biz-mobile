@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Home, Search, ArrowLeft, RefreshCw, Mail, Phone } from "lucide-react";
+import {  ArrowLeft, } from "lucide-react";
 import { Link, useNavigate } from "react-router";
 
 export const NotFoundPage = () => {
@@ -26,7 +26,7 @@ export const NotFoundPage = () => {
       }
     }, 200);
 
-    const handleMouseMove = (e) => {
+    const handleMouseMove = (e:any) => {
       setMousePos({ x: e.clientX, y: e.clientY });
     };
 
