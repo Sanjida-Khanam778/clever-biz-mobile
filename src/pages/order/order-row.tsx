@@ -30,24 +30,9 @@ export const OrderRow = ({ order }: { order: Order }) => {
 
   return (
     <>
-      <style>{`
-    .custom-scroll::-webkit-scrollbar {
-      width: 8px; /* Increase width for better visibility */
-    }
-    .custom-scroll::-webkit-scrollbar-track {
-      background: #f0f0f0; /* Light gray background for the track */
-    }
-    .custom-scroll::-webkit-scrollbar-thumb {
-      background: #ffffff; /* White color for the thumb */
-      border-radius: 4px; /* Slightly rounded corners for the thumb */
-      border: 2px solid #e0e0e0; /* Light border to make the thumb visible */
-    }
-    .custom-scroll::-webkit-scrollbar-thumb:hover {
-      background: #e0e0e0; /* Lighter gray thumb on hover for visibility */
-    }
-  `}</style>
 
-      <div className="flex flex-col bg-white rounded-xl shadow-sm mb-8 border border-gray-100  min-h-96 overflow-y-auto custom-scroll">
+
+      <div className="flex flex-col bg-white rounded-xl shadow-sm mb-8 border border-gray-100   overflow-y-auto  min-h-fit">
         {/* Main Content Container */}
         <div className="p-3 sm:p-4 md:p-6">
           <div className="flex-row custom-scroll lg:flex-row gap-4 lg:gap-6">
@@ -141,3 +126,22 @@ export const OrderRow = ({ order }: { order: Order }) => {
     </>
   );
 };
+
+
+
+// <style>{`
+//     .custom-scroll::-webkit-scrollbar {
+//       width: 8px; /* Increase width for better visibility */
+//     }
+//     .custom-scroll::-webkit-scrollbar-track {
+//       background: #f0f0f0; /* Light gray background for the track */
+//     }
+//     .custom-scroll::-webkit-scrollbar-thumb {
+//       background: #ffffff; /* White color for the thumb */
+//       border-radius: 4px; /* Slightly rounded corners for the thumb */
+//       border: 2px solid #e0e0e0; /* Light border to make the thumb visible */
+//     }
+//     .custom-scroll::-webkit-scrollbar-thumb:hover {
+//       background: #e0e0e0; /* Lighter gray thumb on hover for visibility */
+//     }
+//   `}</style>
