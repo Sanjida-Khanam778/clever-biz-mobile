@@ -1,5 +1,10 @@
 // src/lib/axios.ts
 import axios from "axios";
+const TOKENS = {
+  ACCESS_TOKEN: "accessToken",
+  REFRESH_TOKEN: "refreshToken",
+  USER_INFO: "userInfo",
+};
 
 const axiosInstance = axios.create({
   baseURL: "https://abc.winaclaim.com/",
@@ -9,7 +14,7 @@ const axiosInstance = axios.create({
 });
 
 axiosInstance.interceptors.request.use((config) => {
-  const token = localStorage.getItem("accessToken");
+  const token = localStorage.getItem(TOKENS.ACCESS_TOKEN);
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -26,7 +31,7 @@ axiosInstance.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const refreshToken = localStorage.getItem("refreshToken");
+        const refreshToken = localStorage.getItem(TOKENS.REFRESH_TOKEN);
         if (refreshToken) {
           const response = await axios.post(
             "http://10.10.13.26:9000/token/refresh/",
@@ -44,10 +49,10 @@ axiosInstance.interceptors.response.use(
         }
       } catch {
         // Refresh token failed, redirect to login
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-        localStorage.removeItem("userInfo");
-        window.location.href = "/login";
+        localStorage.removeItem(TOKENS.ACCESS_TOKEN);
+        localStorage.removeItem(TOKENS.REFRESH_TOKEN);
+        localStorage.removeItem(TOKENS.USER_INFO);
+        window.location.href = "/";
       }
     }
 
