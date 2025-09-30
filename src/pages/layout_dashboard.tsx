@@ -135,7 +135,7 @@ const LayoutDashboard = () => {
     const userInfo = localStorage.getItem("userInfo");
     if (userInfo) {
       setTableName(JSON.parse(userInfo)?.user.restaurants[0]?.table_name);
-      console.log(JSON.parse(userInfo).user);
+  
     }
   }, []);
 
@@ -177,7 +177,7 @@ const LayoutDashboard = () => {
     newSoket.onmessage = (event) => {
       const data = JSON.parse(event.data);
       setResponse(data);
-      console.log(data);
+    
       if (data.action === "incoming_call") {
         setIsCallingModal(true);
       }
@@ -219,7 +219,7 @@ const LayoutDashboard = () => {
       newSoket.close();
     };
   }, [jwt, userInfo]);
-  console.log(items);
+ 
   const handleEndCall = (callerId: string, deviceId: string) => {
     const data = {
       action: "end_call",

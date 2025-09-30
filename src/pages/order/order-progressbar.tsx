@@ -1,34 +1,36 @@
-import { useState } from "react";
+// import { SocketContext } from "@/components/SocketContext";
+import { SocketContext } from "@/components/SocketContext";
+import { useContext, useEffect, useState } from "react";
 
 type ProgressBarProps = {
   status: string;
 };
 
 export const ProgressBar = ({ status }: ProgressBarProps) => {
-  const [currentStatus] = useState(status.toLowerCase());
+  const [currentStatus, setCurrentStatus] = useState(status.toLowerCase());
   const [connectionStatus] = useState<
     "connecting" | "connected" | "disconnected" | "error"
   >("disconnected");
+  const { response } = useContext(SocketContext);
+  const [hasPaid, setHasPaid] = useState(status.toLowerCase() === "paid");
 
-  const statusOrder = ["pending", "preparing", "served"]; // Only these three statuses
+  const statusOrder = ["pending", "preparing", "served"];
   const steps = [
     { key: "pending", label: "Pending" },
     { key: "preparing", label: "Preparing" },
     { key: "served", label: "Served" },
   ];
-
   const currentIndex = Math.max(0, statusOrder.indexOf(currentStatus)); // Find the index of the current status
   const progressPercentage = (currentIndex / (statusOrder.length - 1)) * 100; // Calculate the progress percentage
-
-  // Debugging: log current status and progress
-  console.log("Current Status:", currentStatus);
-  console.log("Current Index:", currentIndex);
-  console.log("Progress Percentage:", progressPercentage);
-
   if (currentIndex === -1) {
     console.warn(`Status "${currentStatus}" not found in statusOrder array`);
   }
 
+  useEffect(() => {
+    if (currentStatus === "paid") {
+      setHasPaid(true);
+    }
+  }, [currentStatus]);
   return (
     <div className="w-full">
       <div className="flex items-center justify-between mb-1">
@@ -36,6 +38,27 @@ export const ProgressBar = ({ status }: ProgressBarProps) => {
           Order Progress
         </span>
         <div className="flex items-center gap-2">
+          {hasPaid ? (
+            <div className="flex items-center gap-2 bg-gradient-to-r from-amber-400 to-yellow-500 text-white font-semibold px-3 py-1 rounded-full shadow-md animate-pulse">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+              Paid
+            </div>
+          ) : (
+            <>unpaid</>
+          )}
           <span className="text-xs sm:text-sm capitalize bg-gray-100 px-2 py-1 rounded-full text-gray-600">
             {currentStatus}
           </span>

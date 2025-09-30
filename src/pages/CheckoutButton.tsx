@@ -1,12 +1,15 @@
-import { useState } from "react";
+import {  useState } from "react";
 import axiosInstance from "../lib/axios";
 import { loadStripe } from "@stripe/stripe-js";
 import toast from "react-hot-toast";
 
+
 export default function CheckoutButton({
   orderId,
+  disabled,
 }: {
   orderId: number | string;
+  disabled?: boolean;
 }) {
   console.log(orderId);
   const [loading, setLoading] = useState(false);
@@ -42,7 +45,6 @@ export default function CheckoutButton({
         }
       }
 
-
       if (url) {
         window.location.href = url;
         return;
@@ -61,13 +63,21 @@ export default function CheckoutButton({
   };
 
   return (
-    <button
-      type="button"
-      onClick={handleCheckout}
-      disabled={loading}
-      className="w-full px-4 py-2 rounded-md bg-green-600 text-white hover:bg-green-700 disabled:opacity-60"
-    >
-      {loading ? "Processing..." : "Checkout"}
-    </button>
+    <>
+      <button
+        type="button"
+        onClick={handleCheckout}
+        disabled={disabled}
+        className={`w-full px-4 py-2 rounded-md font-semibold transition-colors duration-300 
+    ${
+      disabled
+        ? "bg-gray-400 cursor-not-allowed"
+        : "bg-green-600 hover:bg-green-700 text-white"
+    }
+  `}
+      >
+        {loading ? "Processing..." : "Checkout"}
+      </button>
+    </>
   );
 }

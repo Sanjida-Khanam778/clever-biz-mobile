@@ -1,16 +1,19 @@
 import veg from "@/assets/veg.png";
 import ReviewModal from "@/components/ReviewModal";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import CheckoutButton from "../CheckoutButton";
 import { ProgressBar } from "./order-progressbar";
 import { Order, OrderItem } from "./order-types";
+import { SocketContext } from "@/components/SocketContext";
 
 export const OrderRow = ({ order }: { order: Order }) => {
   // Support both order_items and items
+  const { response } = useContext(SocketContext);
+  console.log(response);
   const items: OrderItem[] = order.order_items ?? order.items ?? [];
   const [isModalOpen, setIsModalOpen] = useState(false);
   const handleReview = () => {
-    setIsModalOpen(true); // Open the modal when "Review" button is clicked
+    setIsModalOpen(true);
   };
 
   const formatMoney = (v: string | number) => {
@@ -19,7 +22,7 @@ export const OrderRow = ({ order }: { order: Order }) => {
       try {
         return new Intl.NumberFormat(undefined, {
           style: "currency",
-          currency: "AED", // or use your currency
+          currency: "AED",
         }).format(n);
       } catch {
         return `$${n}`;
@@ -30,8 +33,6 @@ export const OrderRow = ({ order }: { order: Order }) => {
 
   return (
     <>
-
-
       <div className="flex flex-col bg-white rounded-xl shadow-sm mb-8 border border-gray-100   overflow-y-auto  min-h-fit">
         {/* Main Content Container */}
         <div className="p-3 sm:p-4 md:p-6">
@@ -94,7 +95,18 @@ export const OrderRow = ({ order }: { order: Order }) => {
             <div className="flex  gap-4 mt-3">
               {/* Checkout Button */}
               <div className="w-full md:w-2/3 mx-auto">
-                <CheckoutButton orderId={order.id} />
+                <CheckoutButton
+                  orderId={order.id}
+                  // disabled={
+                  //   order.id == response?.order?.id &&
+                  //   response?.type === "order_paid"
+                  // }
+                  disabled={
+                    order.status === "paid" || // ✅ permanent check from DB
+                    (order.id === response?.order?.id &&
+                      response?.type === "order_paid") // ✅ instant live update
+                  }
+                />
               </div>
 
               {/* Review Button */}
@@ -126,8 +138,6 @@ export const OrderRow = ({ order }: { order: Order }) => {
     </>
   );
 };
-
-
 
 // <style>{`
 //     .custom-scroll::-webkit-scrollbar {
