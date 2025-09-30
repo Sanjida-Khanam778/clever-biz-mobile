@@ -57,7 +57,7 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
         setMessages((prevMessages) => [...prevMessages, event.data]); // fallback to raw message
       }
     };
-
+    console.log(response);
     socket.onerror = (error) => {
       console.error("WebSocket error:", error);
     };
@@ -74,13 +74,13 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
   }, [wsUrl, id, accessToken]);
 
   const value = {
-    ws, messages, response
+    ws,
+    messages,
+    response,
   };
 
   return (
-    <SocketContext.Provider value={value}>
-      {children}
-    </SocketContext.Provider>
+    <SocketContext.Provider value={value}>{children}</SocketContext.Provider>
   );
 };
 
