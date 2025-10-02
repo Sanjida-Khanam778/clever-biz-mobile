@@ -8,8 +8,9 @@ import { SocketContext } from "@/components/SocketContext";
 
 export const OrderRow = ({ order }: { order: Order }) => {
   // Support both order_items and items
-  const { response } = useContext(SocketContext);
-  console.log(response);
+  const socket = useContext(SocketContext);
+  const response = socket?.response;
+
   const items: OrderItem[] = order.order_items ?? order.items ?? [];
   const [isModalOpen, setIsModalOpen] = useState(false);
   const handleReview = () => {
@@ -33,7 +34,7 @@ export const OrderRow = ({ order }: { order: Order }) => {
 
   return (
     <>
-      <div className="flex flex-col bg-white rounded-xl shadow-sm mb-8 border border-gray-100   overflow-y-auto  min-h-fit">
+      <div className="flex flex-col bg-white rounded-xl shadow-sm md:mb-26 xl:mb-8 border border-gray-100   overflow-y-auto  min-h-fit">
         {/* Main Content Container */}
         <div className="p-3 sm:p-4 md:p-6">
           <div className="flex-row custom-scroll lg:flex-row gap-4 lg:gap-6">
@@ -124,7 +125,7 @@ export const OrderRow = ({ order }: { order: Order }) => {
         </div>
 
         {/* Progress Bar Section */}
-        <div className="border-t border-gray-100 bg-gray-50 px-3 py-4 sm:px-4 sm:py-5 ">
+        <div className="border-t border-gray-100 bg-gray-50 px-3 py-4 sm:px-4 sm:py-5">
           <ProgressBar status={order.status} />
         </div>
       </div>

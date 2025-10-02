@@ -8,7 +8,10 @@ interface Message {
 interface WebSocketContextType {
   ws: WebSocket | null;
   messages: Message[];
-  response: Message | {};
+  response: Message | {
+    type:string,
+    order: any
+  };
 }
 
 // Create a WebSocket context
