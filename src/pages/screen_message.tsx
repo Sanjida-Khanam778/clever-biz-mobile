@@ -13,6 +13,7 @@ type Message = {
 const ScreenMessage = () => {
   return <MessagingUI />;
 };
+
 function MessagingUI() {
   const [inputValue, setInputValue] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -70,6 +71,7 @@ function MessagingUI() {
       ws.current?.close();
     };
   }, [device_id, userInfo]);
+
   useEffect(() => {
     // Check if the user is navigating to the message page
     if (window.location.pathname === "/dashboard/message") {
@@ -78,6 +80,7 @@ function MessagingUI() {
       window.dispatchEvent(new Event("storage")); // Trigger UI update via storage event
     }
   }, []);
+
   useEffect(() => {
     if (!userInfo) return;
 
@@ -103,6 +106,7 @@ function MessagingUI() {
         toast.error("Failed to load previous messages.");
         setMessages([]);
       }
+  
     };
     if (device_id && restaurant_id) fetchMessages();
   }, [device_id, restaurant_id, userInfo]);
@@ -137,9 +141,9 @@ function MessagingUI() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-100">
+    <div className="flex flex-col bg-slate-100 h-screen xl:h-[100vh] min-h-screen relative">
       {/* Header */}
-      <div className="flex items-center p-4 bg-white">
+      <div className="flex items-center p-4 bg-white shadow-sm">
         <div className="flex items-center space-x-3">
           <div className="relative">
             <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
@@ -161,11 +165,6 @@ function MessagingUI() {
             <div className="text-xs text-green-600">Online</div>
           </div>
         </div>
-        <div className="ml-auto">
-          {/* <button className="h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">
-            <Phone size={20} />
-          </button> */}
-        </div>
       </div>
 
       {/* Message area */}
@@ -173,11 +172,7 @@ function MessagingUI() {
         <div className="flex flex-col space-y-4">
           {messages.length > 0 && (
             <>
-              <div className="text-center my-4">
-                <span className="text-xs bg-gray-200 text-gray-500 px-4 py-1 rounded-full">
-                  9:31 PM
-                </span>
-              </div>
+            
               {messages
                 .filter((message) => message.text && message.text.trim() !== "")
                 .map((message) => (
@@ -191,9 +186,8 @@ function MessagingUI() {
                   >
                     {/* Avatar for assistant (left) */}
                     {message.is_from_device === false && (
-                      <div className="w-8 h-8 rounded-full bg-indigo-200 flex items-center justify-center mr-2">
+                      <div className="w-8 h-8 rounded-full bg-indigo-200 flex items-center justify-center mr-2 flex-shrink-0">
                         <span className="text-indigo-700 font-bold">A</span>
-                        {/* Or use an <img src="..." /> for a real avatar */}
                       </div>
                     )}
                     <div
@@ -207,9 +201,8 @@ function MessagingUI() {
                     </div>
                     {/* Avatar for user (right) */}
                     {message.is_from_device === true && (
-                      <div className="w-8 h-8 rounded-full bg-blue-200 flex items-center justify-center ml-2">
+                      <div className="w-8 h-8 rounded-full bg-blue-200 flex items-center justify-center ml-2 flex-shrink-0">
                         <span className="text-blue-700 font-bold">U</span>
-                        {/* Or use an <img src="..." /> for a real avatar */}
                       </div>
                     )}
                   </div>
@@ -220,19 +213,23 @@ function MessagingUI() {
         </div>
       </div>
 
-      {/* Input area */}
-      <div className="p-4 bg-white h-24">
-        <form onSubmit={handleSubmit} className="flex items-center">
+      {/* Input area - Fixed for all devices */}
+      <div className="p-3 sm:p-4 bg-white border-t border-gray-200 shrink-0 mb-20 md:mb-[104px] xl:mb-5">
+        <form
+          onSubmit={handleSubmit}
+          className="flex items-center justify-center gap-2 w-full"
+        >
           <input
             type="text"
             placeholder="Type here"
-            className="text-sm flex-1 p-2 bg-white border rounded-l-lg focus:outline-none border-blue-200"
+            className="text-sm flex-1 min-w-0 p-2 sm:p-3 bg-white border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
           />
           <button
             type="submit"
-            className="p-2 bg-blue-500 text-white rounded-r-lg"
+            className="p-2 sm:p-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg flex-shrink-0 transition-colors"
+            aria-label="Send message"
           >
             <Send size={20} />
           </button>
@@ -241,4 +238,5 @@ function MessagingUI() {
     </div>
   );
 }
+
 export default ScreenMessage;

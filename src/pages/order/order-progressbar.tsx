@@ -1,17 +1,15 @@
-// import { SocketContext } from "@/components/SocketContext";
-import { SocketContext } from "@/components/SocketContext";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 type ProgressBarProps = {
   status: string;
 };
 
 export const ProgressBar = ({ status }: ProgressBarProps) => {
-  const [currentStatus, setCurrentStatus] = useState(status.toLowerCase());
+  const [currentStatus] = useState(status.toLowerCase());
   const [connectionStatus] = useState<
     "connecting" | "connected" | "disconnected" | "error"
   >("disconnected");
-  const { response } = useContext(SocketContext);
+  // const { response } = useContext(SocketContext);
   const [hasPaid, setHasPaid] = useState(status.toLowerCase() === "paid");
 
   const statusOrder = ["pending", "preparing", "served"];
@@ -33,7 +31,7 @@ export const ProgressBar = ({ status }: ProgressBarProps) => {
   }, [currentStatus]);
   return (
     <div className="w-full">
-      <div className="flex items-center justify-between mb-1">
+      <div className="flex items-center justify-between mb-1 ">
         <span className="text-sm font-semibold text-gray-800">
           Order Progress
         </span>
@@ -59,7 +57,7 @@ export const ProgressBar = ({ status }: ProgressBarProps) => {
           ) : (
             <>unpaid</>
           )}
-          <span className="text-xs sm:text-sm capitalize bg-gray-100 px-2 py-1 rounded-full text-gray-600">
+          <span className="text-xs sm:text-sm capitalize bg-gray-100 px-2 py-1 rounded-full text-gray-600 ">
             {currentStatus}
           </span>
           {/* Connection status indicator */}
@@ -79,7 +77,7 @@ export const ProgressBar = ({ status }: ProgressBarProps) => {
       </div>
 
       {/* Smooth Horizontal Progress */}
-      <div className="relative w-full h-3 bg-gray-200 rounded-full overflow-hidden mb-6">
+      <div className="relative w-full h-3 bg-gray-200 rounded-full overflow-hidden ">
         <div
           className="h-full bg-gradient-to-r from-green-400 to-green-600 rounded-full transition-all duration-700 ease-out"
           style={{
@@ -90,13 +88,13 @@ export const ProgressBar = ({ status }: ProgressBarProps) => {
       </div>
 
       {/* Milestone Steps */}
-      <div className="flex justify-between relative">
+      <div className="flex justify-between relative ">
         {steps.map((step) => {
           const stepIndex = statusOrder.indexOf(step.key);
           const isCompleted = stepIndex !== -1 && stepIndex <= currentIndex;
 
           return (
-            <div key={step.key} className="flex flex-col items-center">
+            <div key={step.key} className="flex flex-col items-center mt-3">
               <div
                 className={`w-7 h-7 flex items-center justify-center rounded-full text-xs font-bold transition-all duration-300 ${
                   isCompleted

@@ -52,7 +52,7 @@ const ScreenCart = () => {
       <div>
         <h1 className="text-3xl font-medium">Cart List</h1>
       </div>
-      <div className="flex-1 flex flex-col gap-y-2 mt-8 w-full max-w-2xl">
+      <div className="flex-1 flex flex-col gap-y-2 mt-8 w-full max-w-2xl overflow-y-auto">
         {cart.length === 0 ? (
           <p className="text-center text-primary/60">Your cart is empty.</p>
         ) : (
@@ -65,7 +65,7 @@ const ScreenCart = () => {
               <img
                 src={item.image1}
                 alt={item.item_name}
-                className="w-16 h-16 object-cover rounded-md"
+                className="md:w-10 md:h-10 xl:w-16 xl:h-16 object-cover rounded-md"
               />
               {/* Text & Price */}
               <div className="ml-4 flex-1">
@@ -102,8 +102,8 @@ const ScreenCart = () => {
           ))
         )}
       </div>
-      <div className="w-full mt-4">
-        <div className="w-full flex flex-col gap-2 rounded-lg shadow-md bg-[#F6F9FF] p-4 text-primary">
+      <div className="w-full mt-4 ">
+        <div className="w-full flex flex-col gap-2 rounded-lg shadow-md bg-[#F6F9FF] p-2 text-primary">
           <div className="flex flex-wrap justify-center gap-3 text-sm font-medium">
             <span>
               Total Quantity:{" "}
@@ -117,7 +117,7 @@ const ScreenCart = () => {
             </span>
           </div>
           <button
-            className="button-primary w-full"
+            className="button-primary xl:w-1/2 w-full mx-auto"
             onClick={handleOrderNow}
             disabled={cart.length === 0}
           >
