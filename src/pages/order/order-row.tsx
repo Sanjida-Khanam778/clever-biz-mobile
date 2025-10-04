@@ -34,7 +34,7 @@ export const OrderRow = ({ order }: { order: Order }) => {
 
   return (
     <>
-      <div className="flex flex-col bg-white rounded-xl shadow-sm md:mb-26 xl:mb-8 border border-gray-100   overflow-y-auto  min-h-fit">
+      <div className="flex flex-col bg-white rounded-xl shadow-sm md:mb-14  xl:mb-8 border border-gray-100   overflow-y-auto  min-h-fit">
         {/* Main Content Container */}
         <div className="p-3 sm:p-4 md:p-6">
           <div className="flex-row custom-scroll lg:flex-row gap-4 lg:gap-6">

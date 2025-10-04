@@ -78,7 +78,7 @@ const ScreenOrders = () => {
       {err && !loading && <p className="text-red-600">{err}</p>}
 
       {!loading && !err && (
-        <div className="flex flex-col max-h-[90vh] overflow-y-auto scrollbar-hide ">
+        <div className="flex flex-col max-h-[90vh] overflow-y-auto scrollbar-hide pb-20 gap-3">
           {orders.length === 0 ? (
             <p className="text-center text-gray-500">No orders found.</p>
           ) : (

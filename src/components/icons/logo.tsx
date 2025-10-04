@@ -226,7 +226,7 @@ export const ChefAvatar = () => {
   return (
     <span>
       <svg
-        className="w-80 h-80 sm:w-56 sm:h-56 md:w-64 md:h-64 xl:h-80 xl:w-80"
+        className="w-80 h-80 sm:w-56 sm:h-56 md:w-[450px] lg:w-[200px] lg:h-[200px] md:h-[450px] xl:h-[380px] xl:w-[380px]"
         width="225"
         height="371"
         viewBox="0 0 225 371"
