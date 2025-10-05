@@ -139,35 +139,35 @@ export default function SuccessPage() {
   }, [sessionId, orderId]);
 
   return (
-    <main className="p-6 md:p-10 mx-auto max-w-3xl">
+    <main className="p-4 sm:p-6 md:p-4 mx-auto max-w-4xl   overflow-y-auto h-[90vh] ">
       <header className="text-center">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+        <h1 className="text-md md:text-sm xl:text-2xl font-bold text-gray-900">
           Payment Details
         </h1>
-        <small className="block mt-1 text-gray-500">
+        <small className="block mt-1 text-gray-500 text">
           A summary of your transaction.
         </small>
       </header>
 
       {/* SUMMARY */}
-      <section className="mt-6 grid gap-4 md:grid-cols-1">
-        <article className="col-span-2 rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
+      <section className="mt-6 grid gap-2 md:grid-cols-1">
+        <article className="col-span-2 rounded-2xl border border-gray-200 bg-white shadow-sm p-5 md:mb-25 mb-20">
           <h2 className="text-base font-semibold text-gray-900">Summary</h2>
-          <small className="block mt-1 text-gray-500">
+          {/* <small className="block mt-1 text-gray-500">
             Pulled from your payment confirmation.
-          </small>
+          </small> */}
 
           <dl className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
             <div>
               <dt className="text-gray-500">Paid at</dt>
-              <dd className="font-medium">
+              <dd className="font-medium flex">
                 {loading ? "…" : formatDate(payment?.created)}
               </dd>
             </div>
 
             <div className="sm:col-span-2">
               <dt className="text-gray-500">Amount</dt>
-              <dd className="text-xl font-bold">
+              <dd className="xl:text-xl text-md font-bold">
                 {loading
                   ? "…"
                   : formatMoney(payment?.amount_total, payment?.currency)}
@@ -236,47 +236,46 @@ export default function SuccessPage() {
               </dd>
             </div>
           </dl>
-        </article>
+          <aside className=" ">
+            <h3 className="text-base font-semibold text-gray-900">Customer</h3>
+            <small className="block mt-1 text-gray-500">Billing details</small>
 
-        <aside className="rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
-          <h3 className="text-base font-semibold text-gray-900">Customer</h3>
-          <small className="block mt-1 text-gray-500">Billing details</small>
+            <dl className="mt-4 grid grid-cols-1 gap-3 text-sm">
+              <div>
+                <dt className="text-gray-500">Name</dt>
+                <dd className="font-medium">
+                  {loading ? "…" : payment?.customer_details?.name || "—"}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-gray-500">Email</dt>
+                <dd className="font-medium">
+                  {loading ? "…" : payment?.customer_details?.email || "—"}
+                </dd>
+              </div>
+            </dl>
 
-          <dl className="mt-4 grid grid-cols-1 gap-3 text-sm">
-            <div>
-              <dt className="text-gray-500">Name</dt>
-              <dd className="font-medium">
-                {loading ? "…" : payment?.customer_details?.name || "—"}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-gray-500">Email</dt>
-              <dd className="font-medium">
-                {loading ? "…" : payment?.customer_details?.email || "—"}
-              </dd>
-            </div>
-          </dl>
-
-          {/* BUTTON ROW (no flex) */}
-          <div className="mt-5 grid grid-flow-col auto-cols-max gap-3">
-            <a
-              href="/dashboard/orders"
-              className="inline-block rounded-lg bg-gray-900 text-white px-4 py-2.5 hover:bg-black transition"
-            >
-              View Orders
-            </a>
-            {payment?.receipt_url && (
+            {/* BUTTON ROW (no flex) */}
+            <div className="mt-2 grid grid-flow-col auto-cols-max gap-3 ">
               <a
-                href={payment.receipt_url}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-block rounded-lg border border-gray-300 px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition"
+                href="/dashboard/orders"
+                className="inline-block rounded-lg bg-gray-900 text-white px-2 py-2 hover:bg-black transition"
               >
-                Download Receipt
+                View Orders
               </a>
-            )}
-          </div>
-        </aside>
+              {payment?.receipt_url && (
+                <a
+                  href={payment.receipt_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-block rounded-lg border border-gray-300 px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition"
+                >
+                  Download Receipt
+                </a>
+              )}
+            </div>
+          </aside>
+        </article>
       </section>
     </main>
   );

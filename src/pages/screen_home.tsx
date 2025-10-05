@@ -2,7 +2,7 @@ import { ChefAvatar } from "../components/icons";
 
 const ScreenHome = () => {
   return (
-    <div className="h-screen  flex flex-col justify-between items-center px-1  py-10 overflow-y-hidden">
+    <div className="h-screen  flex flex-col justify-between items-center px-1 mt-2 overflow-y-hidden">
       {/* Top section */}
       <div className="w-full max-w-2xl">
         <div className="flex flex-col gap-y-3 rounded-lg shadow-md bg-[#F6F9FF] p-2  text-primary">
@@ -25,8 +25,8 @@ const ScreenHome = () => {
       </div>
 
       {/* Bottom Section */}
-      <div className="w-full max-w-2xl text-center space-y-2 px-2 mb-10">
-        <h6 className="text-2xl sm:text-2xl md:text-[18px] xl:text-[18px] text-primary font-medium">
+      <div className="w-full max-w-2xl text-center space-y-2 px-2 mb-40">
+        <h6 className="text-2xl sm:text-2xl md:text-[12px] xl:text-[18px] text-primary font-medium">
           Select delicious items for your meal
         </h6>
         <p className="text-sm sm:text-base md:text-[10px] xl:text-[14px] text-primary/100">

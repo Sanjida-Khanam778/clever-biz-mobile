@@ -134,7 +134,7 @@ const LayoutDashboard = () => {
     // Log userInfo from localStorage
     const userInfo = localStorage.getItem("userInfo");
     if (userInfo) {
-      setTableName(JSON.parse(userInfo)?.user.restaurants[0]?.table_name);
+      setTableName(JSON.parse(userInfo)?.user?.restaurants[0]?.table_name);
   
     }
   }, []);
@@ -168,7 +168,7 @@ const LayoutDashboard = () => {
     }
     const newSoket = new WebSocket(
       `wss://abc.winaclaim.com/ws/call/${
-        JSON.parse(userInfo as string).user.restaurants[0].device_id
+        JSON.parse(userInfo as string).user?.restaurants[0].device_id
       }/?token=${jwt}`
     );
     newSoket.onopen = () => {
