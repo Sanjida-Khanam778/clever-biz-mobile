@@ -31,7 +31,7 @@ export const OrderRow = ({ order }: { order: Order }) => {
     }
     return v ?? "—";
   };
-
+ console.log(order)
   return (
     <>
       <div className="flex flex-col bg-white rounded-xl shadow-sm md:mb-14  xl:mb-8 border border-gray-100   overflow-y-auto  min-h-fit">

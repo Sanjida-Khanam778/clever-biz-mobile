@@ -59,7 +59,7 @@ const ScreenLogin = () => {
         password: password,
       });
       // Assuming response.data contains access and refresh tokens
-      console.log(response.data);
+
       const { access, refresh, ...userInfo } = response.data;
       if (access && refresh) {
         localStorage.setItem("accessToken", access);
