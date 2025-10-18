@@ -5,12 +5,15 @@ import CheckoutButton from "../CheckoutButton";
 import { ProgressBar } from "./order-progressbar";
 import { Order, OrderItem } from "./order-types";
 import { SocketContext } from "@/components/SocketContext";
+import { Check, X } from "lucide-react";
 
 export const OrderRow = ({ order }: { order: Order }) => {
   // Support both order_items and items
   const socket = useContext(SocketContext);
   const response = socket?.response;
-
+  const [hasPaid, setHasPaid] = useState(
+    order?.status?.toLowerCase() === "paid"
+  );
   const items: OrderItem[] = order.order_items ?? order.items ?? [];
   const [isModalOpen, setIsModalOpen] = useState(false);
   const handleReview = () => {
@@ -31,14 +34,30 @@ export const OrderRow = ({ order }: { order: Order }) => {
     }
     return v ?? "—";
   };
- console.log(order)
+
   return (
     <>
       <div className="flex flex-col bg-white rounded-xl shadow-sm md:mb-14  xl:mb-8 border border-gray-100   overflow-y-auto  min-h-fit">
         {/* Main Content Container */}
         <div className="p-3 sm:p-4 md:p-6">
           <div className="flex-row custom-scroll lg:flex-row gap-4 lg:gap-6">
-            <div className="flex flex-col xl:flex-row gap-3 sm:gap-4 flex-1">
+            <div className="flex justify-end">
+              {hasPaid ? (
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 px-3 py-1 text-xs font-semibold text-white shadow-lg shadow-emerald-500/30 ring-1 ring-white/20 backdrop-blur-sm">
+                  <Check
+                    className="h-3.5 w-3.5 drop-shadow-sm"
+                    strokeWidth={2.5}
+                  />
+                  Paid
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-br from-slate-700 via-slate-600 to-slate-500 px-3 py-1 text-xs font-semibold text-white shadow-lg shadow-slate-500/20 ring-1 ring-white/10 backdrop-blur-sm">
+                  <X className="h-3.5 w-3.5 drop-shadow-sm" strokeWidth={2.5} />
+                  Unpaid
+                </span>
+              )}
+            </div>
+            <div className="flex flex-col xl:flex-row gap-3 sm:gap-4 flex-1 justify-between">
               {/* Image */}
               <div className="flex-shrink-0 flex justify-center items-center md:justify-center">
                 <img
@@ -124,9 +143,12 @@ export const OrderRow = ({ order }: { order: Order }) => {
           </div>
         </div>
 
-        {/* Progress Bar Section */}
         <div className="border-t border-gray-100 bg-gray-50 px-3 py-4 sm:px-4 sm:py-5">
-          <ProgressBar status={order.status} />
+          <ProgressBar
+            status={order.status}
+            setHasPaid={setHasPaid}
+            hasPaid={hasPaid}
+          />
         </div>
       </div>
 

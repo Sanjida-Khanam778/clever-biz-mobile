@@ -2,15 +2,21 @@ import { useEffect, useState } from "react";
 
 type ProgressBarProps = {
   status: string;
+  hasPaid: boolean;
+  setHasPaid: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export const ProgressBar = ({ status }: ProgressBarProps) => {
+export const ProgressBar = ({
+  status,
+  setHasPaid,
+  hasPaid,
+}: ProgressBarProps) => {
   const [currentStatus] = useState(status.toLowerCase());
   const [connectionStatus] = useState<
     "connecting" | "connected" | "disconnected" | "error"
   >("disconnected");
   // const { response } = useContext(SocketContext);
-  const [hasPaid, setHasPaid] = useState(status.toLowerCase() === "paid");
+  // const [hasPaid, setHasPaid] = useState(status.toLowerCase() === "paid");
 
   const statusOrder = ["pending", "preparing", "served"];
   const steps = [
@@ -36,7 +42,7 @@ export const ProgressBar = ({ status }: ProgressBarProps) => {
           Order Progress
         </span>
         <div className="flex items-center gap-2">
-          {hasPaid ? (
+          {/* {hasPaid ? (
             <div className="flex items-center gap-2 bg-gradient-to-r from-amber-400 to-yellow-500 text-white font-semibold px-3 py-1 rounded-full shadow-md animate-pulse">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -56,7 +62,7 @@ export const ProgressBar = ({ status }: ProgressBarProps) => {
             </div>
           ) : (
             <>unpaid</>
-          )}
+          )} */}
           <span className="text-xs sm:text-sm capitalize bg-gray-100 px-2 py-1 rounded-full text-gray-600 ">
             {currentStatus}
           </span>
