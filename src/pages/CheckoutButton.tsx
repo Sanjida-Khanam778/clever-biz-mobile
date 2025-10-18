@@ -1,8 +1,7 @@
-import {  useState } from "react";
+import { useState } from "react";
 import axiosInstance from "../lib/axios";
 import { loadStripe } from "@stripe/stripe-js";
 import toast from "react-hot-toast";
-
 
 export default function CheckoutButton({
   orderId,
@@ -40,6 +39,7 @@ export default function CheckoutButton({
             )}&order_id=${encodeURIComponent(String(orderId))}`;
             return;
           }
+          console.log(probe);
         } catch {
           toast.error("Payment failed");
         }
