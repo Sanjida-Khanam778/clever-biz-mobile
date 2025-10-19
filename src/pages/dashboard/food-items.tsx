@@ -22,35 +22,37 @@ type Props = {
 export const FoodItems = ({ item, showFood }: Props) => {
   return (
     <>
-      {item.availability ? (
-        <div>
-          <>
-            <div
-              onClick={() => showFood(item.id)}
-              className={cn(
-                "aspect-video md:aspect-[1/1.2] bg-sidebar flex flex-col gap-y-2 items-stretch justify-center rounded-lg shadow-sm p-4 select-none cursor-pointer"
-              )}
-            >
-              <div className="aspect-video md:aspect-square rounded-xl overflow-hidden flex justify-center items-center object-contain">
-                <img
-                  src={item.image1}
-                  alt={item.item_name}
-                  className="object-cover w-full  h-full "
-                />
-              </div>
-              <p className="text-icon-active/80 text-wrap font-medium">
-                {item.item_name}
-              </p>
-              <p className="text-icon-active text-wrap text-start font-bold text-xl tr">
-                {`AED${item.price}`}
-                <span className="text-sm font-normal">
-                  / {item.category_name}
-                </span>
-              </p>
-            </div>
-          </>
+      {item.availability && (
+        <div
+          onClick={() => showFood(item.id)}
+          className={cn(
+            "bg-sidebar flex flex-col items-center justify-between rounded-xl shadow-md p-4 select-none cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-[1.02]",
+            "w-[300px] sm:w-[220px] md:w-[220px] lg:w-[200px] xl:w-[250px] h-[330px]" 
+          )}
+        >
+ 
+          <div className="w-full h-[200px] rounded-lg overflow-hidden flex justify-center items-center bg-[#f9f9f9]">
+            <img
+              src={item.image1}
+              alt={item.item_name}
+              className="object-cover w-full h-full transition-transform duration-500 hover:scale-110"
+            />
+          </div>
+
+        
+          <p className="text-icon-active/80 font-medium mt-1 text-base truncate w-full">
+            {item.item_name}
+          </p>
+
+     
+          <p className="text-icon-active font-bold text-lg mt-1">
+            AED {item.price}
+            <span className="text-sm font-normal text-gray-400 ml-1">
+              / {item.category_name}
+            </span>
+          </p>
         </div>
-      ) : null}
+      )}
     </>
   );
 };

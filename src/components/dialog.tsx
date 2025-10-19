@@ -22,6 +22,10 @@ export const ModalFoodDetail: React.FC<ModalFoodDetailProps> = ({
   const [item, setItem] = useState<any>(null);
   const [showVideo, setShowVideo] = useState(false);
   const { addToCart } = useCart();
+  const truncatedName =
+    item?.item_name?.length > 40
+      ? item.item_name.substring(0, 40) + "..."
+      : item?.item_name || "Loading...";
   useEffect(() => {
     if (isOpen && itemId) {
       axiosInstance.get(`/customer/items/${itemId}/`).then((res) => {
@@ -37,7 +41,7 @@ export const ModalFoodDetail: React.FC<ModalFoodDetailProps> = ({
     <Dialog open={isOpen} onClose={() => close()} className="relative z-50">
       <DialogBackdrop className="fixed inset-0 bg-black/10" />
       <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
-        <DialogPanel className=" bg-sidebar p-4 rounded-lg shadow-xl min-w-lg">
+        <DialogPanel className=" bg-sidebar p-4 rounded-lg shadow-xl min-w-md">
           <div className="relative max-h-[300px] mx-auto aspect-square rounded-xl overflow-hidden flex justify-center items-center object-contain cursor-pointer">
             {showVideo && item?.video ? (
               <video
@@ -83,7 +87,13 @@ export const ModalFoodDetail: React.FC<ModalFoodDetailProps> = ({
             )}
           </div>
           <p className="text-xl text-icon-active text-wrap font-medium mt-4">
-            {item?.item_name || "Loading..."}
+            {truncatedName ? (
+              <p className="text-xl md:text-2xl font-semibold truncate">
+                {truncatedName}
+              </p>
+            ) : (
+              "Loading..."
+            )}
           </p>
           <p className="text-sm text-wrap max-w-lg text-primary/40 mb-4">
             {item?.description || ""}

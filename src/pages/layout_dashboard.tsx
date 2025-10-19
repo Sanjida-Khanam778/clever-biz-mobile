@@ -135,7 +135,6 @@ const LayoutDashboard = () => {
     const userInfo = localStorage.getItem("userInfo");
     if (userInfo) {
       setTableName(JSON.parse(userInfo)?.user?.restaurants[0]?.table_name);
-  
     }
   }, []);
 
@@ -177,7 +176,7 @@ const LayoutDashboard = () => {
     newSoket.onmessage = (event) => {
       const data = JSON.parse(event.data);
       setResponse(data);
-    
+
       if (data.action === "incoming_call") {
         setIsCallingModal(true);
       }
@@ -219,7 +218,7 @@ const LayoutDashboard = () => {
       newSoket.close();
     };
   }, [jwt, userInfo]);
- 
+
   const handleEndCall = (callerId: string, deviceId: string) => {
     const data = {
       action: "end_call",
@@ -312,9 +311,9 @@ const LayoutDashboard = () => {
               Choose Your Items
             </h2>
 
-            <div className="grid grid-cols-1  md:grid-cols-3 xl:grid-cols-4 gap-5 me-4 py-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-5 me-4 py-4">
               {items?.map((item) => (
-                <FoodItems item={item} showFood={showFood} />
+                <FoodItems key={item.id} item={item} showFood={showFood} />
               ))}
             </div>
           </div>
