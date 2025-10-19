@@ -6,11 +6,7 @@ type ProgressBarProps = {
   setHasPaid: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export const ProgressBar = ({
-  status,
-  setHasPaid,
-  hasPaid,
-}: ProgressBarProps) => {
+export const ProgressBar = ({ status, setHasPaid }: ProgressBarProps) => {
   const [currentStatus] = useState(status.toLowerCase());
   const [connectionStatus] = useState<
     "connecting" | "connected" | "disconnected" | "error"
@@ -24,8 +20,8 @@ export const ProgressBar = ({
     { key: "preparing", label: "Preparing" },
     { key: "served", label: "Served" },
   ];
-  const currentIndex = Math.max(0, statusOrder.indexOf(currentStatus)); // Find the index of the current status
-  const progressPercentage = (currentIndex / (statusOrder.length - 1)) * 100; // Calculate the progress percentage
+  const currentIndex = Math.max(0, statusOrder.indexOf(currentStatus));
+  const progressPercentage = (currentIndex / (statusOrder.length - 1)) * 100;
   if (currentIndex === -1) {
     console.warn(`Status "${currentStatus}" not found in statusOrder array`);
   }
@@ -42,31 +38,10 @@ export const ProgressBar = ({
           Order Progress
         </span>
         <div className="flex items-center gap-2">
-          {/* {hasPaid ? (
-            <div className="flex items-center gap-2 bg-gradient-to-r from-amber-400 to-yellow-500 text-white font-semibold px-3 py-1 rounded-full shadow-md animate-pulse">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-              Paid
-            </div>
-          ) : (
-            <>unpaid</>
-          )} */}
           <span className="text-xs sm:text-sm capitalize bg-gray-100 px-2 py-1 rounded-full text-gray-600 ">
             {currentStatus}
           </span>
-          {/* Connection status indicator */}
+
           <div
             className={`w-2 h-2 rounded-full transition-colors duration-300 ${
               connectionStatus === "connected"
