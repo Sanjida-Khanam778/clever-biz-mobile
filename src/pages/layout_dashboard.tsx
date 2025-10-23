@@ -285,7 +285,7 @@ const LayoutDashboard = () => {
               <div
                 onClick={() => setSelectedCategory(null)}
                 className={cn(
-                  "flex-shrink-0 h-40 w-38 bg-sidebar flex flex-col gap-y-4 items-center justify-center rounded-lg shadow-sm py-4 last:mr-4 select-none cursor-pointer border",
+                  "flex-shrink-0 truncate h-40 w-38 bg-sidebar flex flex-col gap-y-4 items-center justify-center rounded-lg shadow-sm py-4 last:mr-4 select-none cursor-pointer border",
                   {
                     "bg-[#F1F5FF] border-[#ABC1FF]": selectedCategory === null,
                     "border-transparent": selectedCategory !== null,
