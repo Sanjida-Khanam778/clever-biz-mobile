@@ -25,7 +25,7 @@ export const CategoryItem = ({
       key={cat.id}
       onClick={() => setSelectedCategory(i)}
       className={cn(
-        "flex-shrink-0 h-40 w-38 bg-sidebar flex flex-col gap-y-4 items-center justify-center rounded-lg shadow-sm py-4 last:mr-4 select-none cursor-pointer",
+        "flex-shrink-0 h-40 w-38 truncate bg-sidebar flex flex-col gap-y-4 items-center justify-center rounded-lg shadow-sm py-4 last:mr-4 select-none cursor-pointer",
         {
           "bg-[#F1F5FF] border border-[#ABC1FF]": selectedCategory === i,
         }
@@ -38,7 +38,10 @@ export const CategoryItem = ({
           className="object-cover w-full h-full"
         />
       </div>
-      <p className="text-primary font-medium">{cat.Category_name}</p>
+      <p className="text-primary font-medium">{`${cat.Category_name.substring(
+        0,
+        17
+      )}`}</p>
     </div>
   );
 };

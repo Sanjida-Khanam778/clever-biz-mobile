@@ -68,8 +68,9 @@ export const OrderRow = ({ order }: { order: Order }) => {
               </div>
               <div className="flex-1 min-w-0 flex flex-col justify-between">
                 {/* Title */}
-                <h2 className="font-semibold text-gray-900 text-base sm:text-lg md:text-xl truncate">
-                  {items[0]?.item_name || `Order #${order.id}`}
+                <h2 className="font-semibold w-50 text-gray-900 text-base sm:text-lg md:text-xl truncate">
+                  {`${items[0]?.item_name}` ||
+                    `Order #${order.id}`}
                 </h2>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2 mt-1">
                   <p className="text-gray-700 font-medium text-sm sm:text-base">
@@ -93,7 +94,7 @@ export const OrderRow = ({ order }: { order: Order }) => {
                           className="text-xs sm:text-sm text-gray-700 flex flex-wrap gap-1"
                         >
                           <span className="font-medium text-gray-900">
-                            {it.item_name}
+                            {it.item_name.substring(0, 30)}
                           </span>
                           <span className="text-gray-500">× {it.quantity}</span>
                           <span className="text-gray-600 ml-auto">
