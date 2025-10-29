@@ -100,7 +100,7 @@ export const ModalFoodDetail: React.FC<ModalFoodDetailProps> = ({
           </p>
           <div className="flex items-center justify-between">
             <p className="text-icon-active text-wrap text-start font-bold text-2xl">
-              {item ? `$${item.price}` : ""}
+              {item ? `AED ${item.price}` : ""}
               <span className="text-sm font-normal">
                 {" "}
                 / {item?.category_name || ""}
