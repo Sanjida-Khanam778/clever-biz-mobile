@@ -14,6 +14,7 @@ type Props = {
   setSelectedCategory: (ind: number) => void;
 };
 
+// category-item.tsx
 export const CategoryItem = ({
   cat,
   setSelectedCategory,
@@ -22,10 +23,10 @@ export const CategoryItem = ({
 }: Props) => {
   return (
     <div
-      key={cat.id}
       onClick={() => setSelectedCategory(i)}
       className={cn(
         "flex-shrink-0 h-40 w-38 truncate bg-sidebar flex flex-col gap-y-4 items-center justify-center rounded-lg shadow-sm py-4 last:mr-4 select-none cursor-pointer",
+        "transition-all duration-200", // ADD THIS LINE
         {
           "bg-[#F1F5FF] border border-[#ABC1FF]": selectedCategory === i,
         }

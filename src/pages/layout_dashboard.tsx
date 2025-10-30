@@ -10,7 +10,7 @@ import { SocketContext } from "@/components/SocketContext";
 import { useWebSocket } from "@/components/WebSocketContext";
 import { cn } from "clsx-for-tailwind";
 import { UtensilsCrossed } from "lucide-react";
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import {  useContext, useEffect, useMemo, useRef, useState } from "react";
 import { Outlet, useNavigate } from "react-router";
 import { CartProvider } from "../context/CartContext";
 import axiosInstance from "../lib/axios";
@@ -18,6 +18,7 @@ import { type CategoryItemType, CategoryItem } from "./dashboard/category-item";
 import { DashboardHeader } from "./dashboard/dashboard-header";
 import { DashboardLeftSidebar } from "./dashboard/dashboard-left-sidebar";
 import { FoodItemTypes, FoodItems } from "./dashboard/food-items";
+// import Pagination from "./order/items-pagination";
 
 const LayoutDashboard = () => {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
@@ -29,6 +30,8 @@ const LayoutDashboard = () => {
   const [isCallConfirmOpen, setCallConfirmOpen] = useState(false);
   const [isCallOpen, setCallOpen] = useState(false);
   const [hasNewMessage, setHasNewMessage] = useState(false);
+  // const [currentPage, setCurrentPage] = useState(1);
+  // const [totalPages, setTotalPages] = useState(1);
 
   const socketContext = useContext(SocketContext) as any;
   const NewUpdate = useMemo(
@@ -110,8 +113,23 @@ const LayoutDashboard = () => {
     }
   };
   useEffect(() => {
-    fetchItems();
+    // Debounced search effect
+    if (searchTimeout.current) clearTimeout(searchTimeout.current);
 
+    searchTimeout.current = setTimeout(
+      () => {
+        fetchItems();
+      },
+      search ? 400 : 0
+    ); // Only debounce when searching
+
+    return () => {
+      if (searchTimeout.current) clearTimeout(searchTimeout.current);
+    };
+  }, [search, selectedCategory]); // Remove 'categories' and 'NewUpdate' from here
+
+  // Separate effect for real-time updates
+  useEffect(() => {
     if (
       NewUpdate.type === "item_created" ||
       NewUpdate.type === "item_updated" ||
@@ -119,17 +137,10 @@ const LayoutDashboard = () => {
     ) {
       fetchItems();
     }
-
-    // Debounced search effect
-    if (searchTimeout.current) clearTimeout(searchTimeout.current);
-    searchTimeout.current = setTimeout(() => {
-      fetchItems();
-    }, 400);
-    return () => {
-      if (searchTimeout.current) clearTimeout(searchTimeout.current);
-    };
-  }, [search, selectedCategory, categories, NewUpdate]);
-
+  }, [NewUpdate]);
+// const handleCategorySelect = useCallback((ind: number | null) => {
+//   setSelectedCategory(ind);
+// }, []);
   useEffect(() => {
     // Log userInfo from localStorage
     const userInfo = localStorage.getItem("userInfo");
@@ -301,6 +312,7 @@ const LayoutDashboard = () => {
               {categories?.map((cat, i) => (
                 <CategoryItem
                   cat={cat}
+                  key={cat?.id}
                   i={i}
                   selectedCategory={selectedCategory}
                   setSelectedCategory={setSelectedCategory}
