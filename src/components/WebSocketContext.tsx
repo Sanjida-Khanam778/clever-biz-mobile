@@ -41,7 +41,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
 
     if (!device_id || !accessToken) return;
 
-    const wsUrl = `wss://abc.winaclaim.com/ws/chat/${device_id}/?token=${accessToken}`;
+    const wsUrl = `wss://api.cleverbiz.ai//ws/chat/${device_id}/?token=${accessToken}`;
     const socket = new WebSocket(wsUrl);
 
     socket.onopen = () => {

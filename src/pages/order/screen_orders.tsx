@@ -46,7 +46,7 @@ const ScreenOrders = () => {
       return;
     }
     const newSoket = new WebSocket(
-      `wss://abc.winaclaim.com/ws/order/${device_id}/?token=${accessToken}`
+      `wss://api.cleverbiz.ai//ws/order/${device_id}/?token=${accessToken}`
     );
 
     newSoket.onopen = () => {

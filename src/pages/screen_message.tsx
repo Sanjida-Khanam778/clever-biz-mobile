@@ -35,7 +35,7 @@ function MessagingUI() {
     const accessToken = localStorage.getItem("accessToken");
     if (!userInfo || !accessToken) return;
 
-    const wsUrl = `wss://abc.winaclaim.com/ws/chat/${device_id}/?token=${accessToken}`;
+    const wsUrl = `wss://api.cleverbiz.ai/ws/chat/${device_id}/?token=${accessToken}`;
     ws.current = new WebSocket(wsUrl);
 
     ws.current.onopen = () => {
@@ -106,7 +106,6 @@ function MessagingUI() {
         toast.error("Failed to load previous messages.");
         setMessages([]);
       }
-  
     };
     if (device_id && restaurant_id) fetchMessages();
   }, [device_id, restaurant_id, userInfo]);
@@ -172,7 +171,6 @@ function MessagingUI() {
         <div className="flex flex-col space-y-4">
           {messages.length > 0 && (
             <>
-            
               {messages
                 .filter((message) => message.text && message.text.trim() !== "")
                 .map((message) => (

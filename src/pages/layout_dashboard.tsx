@@ -10,7 +10,7 @@ import { SocketContext } from "@/components/SocketContext";
 import { useWebSocket } from "@/components/WebSocketContext";
 import { cn } from "clsx-for-tailwind";
 import { UtensilsCrossed } from "lucide-react";
-import {  useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { Outlet, useNavigate } from "react-router";
 import { CartProvider } from "../context/CartContext";
 import axiosInstance from "../lib/axios";
@@ -73,7 +73,7 @@ const LayoutDashboard = () => {
   const [search, setSearch] = useState("");
   const searchTimeout = useRef<any>(null);
   const [tableName, setTableName] = useState("");
-
+  console.log(items);
   const fetchCategories = async () => {
     try {
       const response = await axiosInstance.get("/customer/categories/");
@@ -107,7 +107,8 @@ const LayoutDashboard = () => {
         url += `?${params.join("&")}`;
       }
       const response = await axiosInstance.get(url);
-      setItems(response.data.results || []);
+      console.log(response)
+      setItems(response?.data || []);
     } catch (error) {
       console.error("Failed to fetch items", error);
     }
@@ -138,9 +139,9 @@ const LayoutDashboard = () => {
       fetchItems();
     }
   }, [NewUpdate]);
-// const handleCategorySelect = useCallback((ind: number | null) => {
-//   setSelectedCategory(ind);
-// }, []);
+  // const handleCategorySelect = useCallback((ind: number | null) => {
+  //   setSelectedCategory(ind);
+  // }, []);
   useEffect(() => {
     // Log userInfo from localStorage
     const userInfo = localStorage.getItem("userInfo");
@@ -177,7 +178,7 @@ const LayoutDashboard = () => {
       return;
     }
     const newSoket = new WebSocket(
-      `wss://abc.winaclaim.com/ws/call/${
+      `wss://api.cleverbiz.ai//ws/call/${
         JSON.parse(userInfo as string).user?.restaurants[0].device_id
       }/?token=${jwt}`
     );

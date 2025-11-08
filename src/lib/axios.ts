@@ -7,7 +7,7 @@ const TOKENS = {
 };
 
 const axiosInstance = axios.create({
-  baseURL: "https://abc.winaclaim.com/",
+  baseURL: "https://api.cleverbiz.ai/",
   headers: {
     "Content-Type": "application/json",
   },
@@ -34,7 +34,7 @@ axiosInstance.interceptors.response.use(
         const refreshToken = localStorage.getItem(TOKENS.REFRESH_TOKEN);
         if (refreshToken) {
           const response = await axios.post(
-            "http://10.10.13.26:9000/token/refresh/",
+            "https://api.cleverbiz.ai/token/refresh/",
             {
               refresh: refreshToken,
             }
