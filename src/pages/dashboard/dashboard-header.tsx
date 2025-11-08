@@ -30,8 +30,8 @@ export const DashboardHeader = ({
         />
         <div className="flex items-center gap-x-4">
           <div className="flex flex-col items-center">
-            <div className="h-10 w-10 bg-accent/5 rounded-full flex justify-center items-center truncate">
-              <h2 className="font-bold text-lg text-accent">{tableName}</h2>
+            <div className="h-10   flex justify-center items-center truncate">
+              <h2 className="font-bold text-sm text-accent">{tableName}</h2>
             </div>
             <h6 className="text-xs uppercase font-medium text-icon-active">
               Table No
