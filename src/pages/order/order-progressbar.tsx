@@ -13,7 +13,7 @@ export const ProgressBar = ({ status, setHasPaid }: ProgressBarProps) => {
   >("disconnected");
   // const { response } = useContext(SocketContext);
   // const [hasPaid, setHasPaid] = useState(status.toLowerCase() === "paid");
-
+  console.log(currentStatus);
   const statusOrder = ["pending", "preparing", "served"];
   const steps = [
     { key: "pending", label: "Pending" },
@@ -31,6 +31,13 @@ export const ProgressBar = ({ status, setHasPaid }: ProgressBarProps) => {
       setHasPaid(true);
     }
   }, [currentStatus]);
+  // console.log(response);
+  // useEffect(() => {
+  //   if (response === "order_updated") {
+  //     setCurrentStatus(status);
+  //   }
+  // }, [currentStatus]);
+
   return (
     <div className="w-full">
       <div className="flex items-center justify-between mb-1 ">
