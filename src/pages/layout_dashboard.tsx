@@ -73,7 +73,7 @@ const LayoutDashboard = () => {
   const [search, setSearch] = useState("");
   const searchTimeout = useRef<any>(null);
   const [tableName, setTableName] = useState("");
-  console.log(items);
+
   const fetchCategories = async () => {
     try {
       const response = await axiosInstance.get("/customer/categories/");

@@ -1,71 +1,106 @@
 import axiosInstance from "@/lib/axios";
-import { useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { OrderRow } from "./order-row";
 import { Order } from "./order-types";
+import { SocketContext } from "@/components/SocketContext";
 
 const ScreenOrders = () => {
+  const socket = useContext(SocketContext);
+  const response = socket?.response;
+  // const { response } = useContext(SocketContext);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
-  const accessToken = localStorage.getItem("accessToken");
-  const userInfo = localStorage.getItem("userInfo");
-  const device_id = userInfo
-    ? JSON.parse(userInfo).user.restaurants[0].device_id
-    : null;
+  // const accessToken = localStorage.getItem("accessToken");
+  // const userInfo = localStorage.getItem("userInfo");
+  // const device_id = userInfo
+  //   ? JSON.parse(userInfo).user.restaurants[0].device_id
+  //   : null;
+  
+  // useEffect(() => {
+  //   const fetchOrders = async () => {
+  //     try {
+  //       setLoading(true);
+  //       setErr(null);
+  //       // Try without the search filter if unsure it’s correct:
+  //       const res = await axiosInstance.get("/customer/uncomplete/orders/");
+  //       const d = res?.data;
 
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        setLoading(true);
-        setErr(null);
-        // Try without the search filter if unsure it’s correct:
-        const res = await axiosInstance.get("/customer/uncomplete/orders/");
-        const d = res?.data;
+  //       // Handle multiple response shapes: array vs paginated object
+  //       const list: Order[] = Array.isArray(d)
+  //         ? d
+  //         : d?.results ?? d?.orders ?? [];
 
-        // Handle multiple response shapes: array vs paginated object
-        const list: Order[] = Array.isArray(d)
-          ? d
-          : d?.results ?? d?.orders ?? [];
+  //       setOrders(Array.isArray(list) ? list : []);
+  //     } catch (e: unknown) {
+  //       console.error("Failed to fetch orders:", e);
 
-        setOrders(Array.isArray(list) ? list : []);
-      } catch (e: unknown) {
-        console.error("Failed to fetch orders:", e);
+  //       if (e instanceof Error) {
+  //         setErr(e.message);
+  //       } else {
+  //         setErr("Failed to fetch orders.");
+  //       }
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   fetchOrders();
 
-        if (e instanceof Error) {
-          setErr(e.message);
-        } else {
-          setErr("Failed to fetch orders.");
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchOrders();
+  //   if (!accessToken) {
+  //     return;
+  //   }
+  //   // const newSoket = new WebSocket(
+  //   //   `wss://api.cleverbiz.ai//ws/order/${device_id}/?token=${accessToken}`
+  //   // );
 
-    if (!accessToken) {
-      return;
+  //   // newSoket.onopen = () => {
+  //   //   console.log("WebSocket connection established");
+  //   // };
+
+  //   // newSoket.onmessage = (event) => {
+  //   //   const data = JSON.parse(event.data);
+  //   //   console.log("Received message:", data);
+  //   //   fetchOrders();
+  //   // };
+  //   // newSoket.onclose = () => {
+  //   //   console.log("WebSocket connection closed");
+  //   // };
+
+  //   // return () => {
+  //   //   newSoket.close();
+  //   // };
+  // }, [device_id, accessToken]);
+  const fetchOrders = useCallback(async () => {
+    try {
+      setLoading(true);
+      setErr(null);
+      const res = await axiosInstance.get("/customer/uncomplete/orders/");
+      const d = res?.data;
+
+      const list: Order[] = Array.isArray(d)
+        ? d
+        : d?.results ?? d?.orders ?? [];
+
+      setOrders(Array.isArray(list) ? list : []);
+    } catch (e: unknown) {
+      console.error("Failed to fetch orders:", e);
+      setErr(e instanceof Error ? e.message : "Failed to fetch orders.");
+    } finally {
+      setLoading(false);
     }
-    const newSoket = new WebSocket(
-      `wss://api.cleverbiz.ai//ws/order/${device_id}/?token=${accessToken}`
-    );
+  }, []);
 
-    newSoket.onopen = () => {
-      console.log("WebSocket connection established");
-    };
-
-    newSoket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      console.log("Received message:", data);
+  // Initial fetch on mount
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
+  useEffect(() => {
+    if (response?.type == "order_updated") {
+      console.log("Socket response received, refetching orders:", response);
       fetchOrders();
-    };
-    newSoket.onclose = () => {
-      console.log("WebSocket connection closed");
-    };
-
-    return () => {
-      newSoket.close();
-    };
-  }, [device_id, accessToken]);
+    }
+  }, [response, fetchOrders]);
+  console.log(response);
 
   return (
     <div className="flex flex-col">

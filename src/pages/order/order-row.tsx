@@ -34,6 +34,7 @@ export const OrderRow = ({ order }: { order: Order }) => {
     }
     return v ?? "—";
   };
+  console.log(response);
 
   return (
     <>
@@ -69,8 +70,7 @@ export const OrderRow = ({ order }: { order: Order }) => {
               <div className="flex-1 min-w-0 flex flex-col justify-between">
                 {/* Title */}
                 <h2 className="font-semibold w-50 text-gray-900 text-base sm:text-lg md:text-xl truncate">
-                  {`${items[0]?.item_name}` ||
-                    `Order #${order.id}`}
+                  {`${items[0]?.item_name}` || `Order #${order.id}`}
                 </h2>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2 mt-1">
                   <p className="text-gray-700 font-medium text-sm sm:text-base">
